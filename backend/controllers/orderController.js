@@ -12,7 +12,7 @@ const getOrder = asyncHandler(async (req, res) => {
 });
 
 // @desc    Set order
-// @route   POST /api/order/:id
+// @route   POST /api/order/
 // @access  Private
 const setOrder = asyncHandler(async (req, res) => {
   if (!req.body.order_status) {
@@ -22,15 +22,15 @@ const setOrder = asyncHandler(async (req, res) => {
 
   const order = await Order.create({
     member_id: req.member.id,
-    // fixie_id: req.fixie.id,
     order_status: req.body.order_status,
   });
+  // fixie_id: req.fixie.id,
 
   res.status(200).json(order);
 });
 
 // @desc    Update order
-// @route   PUT /api/order
+// @route   PUT /api/order/:id
 // @access  Private
 const updateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
@@ -41,14 +41,13 @@ const updateOrder = asyncHandler(async (req, res) => {
   }
 
   // Check for member
-  const member = await Member.findById(req.user.id);
   if (!req.member) {
     res.status(401);
     throw new Error('Member not found');
   }
 
   // Make sure order belongs to member
-  if (order.member_id.toString() !== member._id) {
+  if (order.member_id.toString() !== req.member._id) {
     res.status(401);
     throw new Error('Unauthorized access to order');
   }
@@ -71,14 +70,13 @@ const deleteOrder = asyncHandler(async (req, res) => {
   }
 
   // Check for member
-  const member = await Member.findById(req.member.id);
   if (!req.member) {
     res.status(401);
     throw new Error('Member not found');
   }
 
   // Make sure order belongs to member
-  if (order.member_id.toString() !== member.id) {
+  if (order.member_id.toString() !== req.member.id) {
     res.status(401);
     throw new Error('Unauthorized access to order');
   }
