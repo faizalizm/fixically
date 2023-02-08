@@ -11,6 +11,9 @@
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm run build"
   },
+  "engines": {
+    "node": "16.17.0"
+  },
   "author": "Muhammad Faizal",
   "license": "MIT",
   "dependencies": {
