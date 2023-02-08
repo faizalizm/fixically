@@ -10,9 +10,6 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "engines": {
-    "node": "16.17.0"
-  },
   "author": "Muhammad Faizal",
   "license": "MIT",
   "dependencies": {
@@ -22,8 +19,7 @@
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^6.9.1",
-    "serve": "^14.2.0"
+    "mongoose": "^6.9.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
