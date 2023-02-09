@@ -14,6 +14,7 @@ function Header() {
     dispatch(reset());
     navigate('/');
   };
+
   return (
     <header className="header">
       <div className="logo">
@@ -35,7 +36,7 @@ function Header() {
             </li>
             <li>
               <Link to="/register">
-                <FaSignInAlt /> Register
+                <FaUser /> Register
               </Link>
             </li>
           </>

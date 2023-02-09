@@ -7,11 +7,24 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'Member',
     },
-    // fixie_id: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   required: true,
-    //   ref: 'Fixie',
-    // },
+    fixie_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Fixie',
+    },
+    order_item: {
+      item: [
+        {
+          service_id: {
+            type: Number,
+          },
+          quote_id: {
+            type: Number,
+          },
+        },
+      ],
+      required: [true, 'Please add order item'],
+    },
     order_status: {
       type: String,
       required: [true, 'Please add an order status'],

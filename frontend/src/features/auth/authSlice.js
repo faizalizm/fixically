@@ -58,8 +58,8 @@ export const authSlice = createSlice({
   reducers: {
     reset: (state) => {
       state.isLoading = false;
-      state.isError = false;
       state.isSuccess = false;
+      state.isError = false;
       state.message = '';
     },
   },
@@ -79,9 +79,6 @@ export const authSlice = createSlice({
         state.message = action.payload;
         state.member = null;
       })
-      .addCase(logout.fulfilled, (state) => {
-        state.member = null;
-      })
       .addCase(login.pending, (state) => {
         state.isLoading = true;
       })
@@ -94,6 +91,9 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.member = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
         state.member = null;
       });
   },
