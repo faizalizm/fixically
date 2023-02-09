@@ -23,7 +23,6 @@ const orderSchema = mongoose.Schema(
           },
         },
       ],
-      required: [true, 'Please add order item'],
     },
     order_status: {
       type: String,
