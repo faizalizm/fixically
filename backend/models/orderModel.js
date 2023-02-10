@@ -12,21 +12,27 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'Fixie',
     },
-    order_item: {
-      item: [
-        {
-          service_id: {
-            type: Number,
-          },
-          quote_id: {
-            type: Number,
-          },
+    item: [
+      {
+        service_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: 'Service',
         },
-      ],
-    },
-    order_status: {
+        quote_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: 'Quotation',
+        },
+      },
+    ],
+    status: {
       type: String,
       required: [true, 'Please add an order status'],
+    },
+    total: {
+      type: String,
+      required: [true, 'Please add tag'],
     },
   },
   {

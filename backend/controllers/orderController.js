@@ -82,6 +82,13 @@ const deleteOrder = asyncHandler(async (req, res) => {
   }
 
   const removedOrder = await order.remove();
+  // Order.deleteOne({ _id: req.params.id }, function(err, result) {
+  //   if (err) {
+  //     console.err(err);
+  //   } else {
+  //     res.json(result);
+  //   }
+  // });
   res.status(200).json({ id: req.params.id });
 });
 
