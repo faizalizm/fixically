@@ -18,19 +18,17 @@ app.use('/api/fixie', require('./routes/fixieRoutes'));
 app.use('/api/order', require('./routes/orderRoutes'));
 
 // Serve frontend
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static(path.join(__dirname, '../frontend/build')));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
 
-//   app.get('*', (req, res) =>
-//     res.sendFile(
-//       path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
-//     )
-//   );
-// } else {
-//   app.get('/', (req, res) => res.send('Please change to production mode'));
-// }
-
-// "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+  app.get('*', (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
+    )
+  );
+} else {
+  app.get('/', (req, res) => res.send('Please change to production mode'));
+}
 
 app.use(errorHandler);
 
