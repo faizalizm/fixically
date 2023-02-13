@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 
 const Service = require('../models/serviceModel');
-const Fixie = require('../models/fixieModel');
 
 // @desc    Get service
 // @route   GET /api/service

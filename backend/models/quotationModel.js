@@ -34,11 +34,9 @@ const quotationSchema = mongoose.Schema(
     },
     feedback: {
       type: String,
-      required: [true, 'Please add feedback'],
     },
     price: {
       type: Number,
-      required: [true, 'Please add price'],
     },
   },
   {

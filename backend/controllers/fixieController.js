@@ -108,7 +108,7 @@ const loginFixie = asyncHandler(async (req, res) => {
 // @route   GET /api/fixie/update
 // @access  Private
 const updateFixie = asyncHandler(async (req, res) => {
-  const fixie = await Fixie.findById(req.body.fixie_id);
+  const fixie = await Fixie.findById(req.fixie.id);
 
   if (!fixie) {
     res.status(401);

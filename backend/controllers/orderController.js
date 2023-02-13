@@ -8,8 +8,10 @@ const Quotation = require('../models/quotationModel');
 // @route   GET /api/order
 // @access  Private
 const getOrder = asyncHandler(async (req, res) => {
-  // const order = await Order.find({ member_id: req.member.id });
-  res.status(200).json(req.member);
+  const order = req.fixie
+    ? await Order.find({ fixie_id: req.fixie.id })
+    : await Order.find({ member_id: req.member.id });
+  res.status(200).json(order);
 });
 
 // @desc    Set order
@@ -31,9 +33,6 @@ const setOrder = asyncHandler(async (req, res) => {
     fixie_id: req.body.fixie_id,
     status: 'CREATED',
   };
-
-  // const service = Service.findById(req.body.item[0].service_id);
-  // res.status(200).json(service);
 
   req.body['total'] = 0;
   if (req.body.item) {
@@ -64,6 +63,8 @@ const setOrder = asyncHandler(async (req, res) => {
 // @route   PUT /api/order/:id
 // @access  Private
 const updateOrder = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+
   const order = await Order.findById(req.params.id);
 
   if (!order) {
@@ -87,12 +88,13 @@ const updateOrder = asyncHandler(async (req, res) => {
     throw new Error('Unauthorized access to order');
   }
 
-  var filterObj = {};
-  filterObj['status'] = req.body['status'];
-
-  const updatedOrder = await Order.findByIdAndUpdate(req.params.id, filterObj, {
-    new: true,
-  });
+  const updatedOrder = await Order.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    {
+      new: true,
+    }
+  );
   res.status(200).json(updatedOrder);
 });
 

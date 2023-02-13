@@ -1,14 +1,15 @@
 const asyncHandler = require('express-async-handler');
 
 const Quotation = require('../models/quotationModel');
-const Member = require('../models/memberModel');
-const Fixie = require('../models/fixieModel');
 
 // @desc    Get quotation
 // @route   GET /api/quotation
 // @access  Private
 const getQuotation = asyncHandler(async (req, res) => {
-  const quotation = await Quotation.find({ member_id: req.member.id });
+  const quotation = req.fixie
+    ? await Quotation.find({ fixie_id: req.fixie.id })
+    : await Quotation.find({ member_id: req.member.id });
+
   res.status(200).json(quotation);
 });
 
@@ -16,16 +17,22 @@ const getQuotation = asyncHandler(async (req, res) => {
 // @route   POST /api/quotation/
 // @access  Private
 const setQuotation = asyncHandler(async (req, res) => {
-  if (!req.body.quotation_status) {
+  const { brand, model, problem, description } = req.body;
+
+  if (!req.body.fixie_id) {
     res.status(400);
-    throw new Error('Please add a text field');
+    throw new Error('Please indicate fixie_id');
   }
 
   const quotation = await Quotation.create({
     member_id: req.member.id,
-    quotation_status: req.body.quotation_status,
+    fixie_id: req.body.fixie_id,
+    status: 'CREATED',
+    brand,
+    model,
+    problem,
+    description,
   });
-  // fixie_id: req.fixie.id,
 
   res.status(200).json(quotation);
 });
@@ -34,6 +41,7 @@ const setQuotation = asyncHandler(async (req, res) => {
 // @route   PUT /api/quotation/:id
 // @access  Private
 const updateQuotation = asyncHandler(async (req, res) => {
+  const { feedback, price } = req.body;
   const quotation = await Quotation.findById(req.params.id);
 
   if (!quotation) {
@@ -41,21 +49,25 @@ const updateQuotation = asyncHandler(async (req, res) => {
     throw new Error('Quotation not found');
   }
 
-  // Check for member
-  if (!req.member) {
+  // Check for user
+  if (!req.fixie && !req.member) {
     res.status(401);
-    throw new Error('Member not found');
+    throw new Error('User not found');
   }
 
-  // Make sure quotation belongs to member
-  if (quotation.member_id.toString() !== req.member._id) {
+  // Make sure quotation belongs to user
+  if (
+    req.fixie
+      ? quotation.fixie_id.toString() !== req.fixie.id
+      : quotation.member_id.toString() !== req.member.id
+  ) {
     res.status(401);
     throw new Error('Unauthorized access to quotation');
   }
 
   const updatedQuotation = await Quotation.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    { feedback, price },
     {
       new: true,
     }
