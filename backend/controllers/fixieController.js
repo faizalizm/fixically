@@ -63,6 +63,10 @@ const registerFixie = asyncHandler(async (req, res) => {
     address,
     state,
     city,
+    application: {
+      status: 'CREATED',
+      date: Date.now(),
+    },
     os_support: { windows, mac },
   });
 
@@ -100,6 +104,37 @@ const loginFixie = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update fixie data
+// @route   GET /api/fixie/update
+// @access  Private
+const updateFixie = asyncHandler(async (req, res) => {
+  const fixie = await Fixie.findById(req.body.fixie_id);
+
+  if (!fixie) {
+    res.status(401);
+    throw new Error('Fixie not found');
+  }
+
+  // Make sure only the fixie can update themselves
+  if (fixie._id.toString() !== req.fixie.id) {
+    res.status(401);
+    throw new Error('Unauthorized access to fixie data');
+  }
+
+  // Password hashing
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashedPassword;
+  }
+
+  const updatedFixie = await Fixie.findByIdAndUpdate(fixie._id, req.body, {
+    new: true,
+  });
+
+  res.status(200).json(updatedFixie);
+});
+
 // @desc    Get fixie data
 // @route   GET /api/fixie/me
 // @access  Private
@@ -114,4 +149,4 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = { registerFixie, loginFixie, getFixie };
+module.exports = { registerFixie, loginFixie, updateFixie, getFixie };

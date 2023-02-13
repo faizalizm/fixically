@@ -1,30 +1,61 @@
 const asyncHandler = require('express-async-handler');
 
 const Order = require('../models/orderModel');
-const Member = require('../models/memberModel');
+const Service = require('../models/serviceModel');
+const Quotation = require('../models/quotationModel');
 
 // @desc    Get order
 // @route   GET /api/order
 // @access  Private
 const getOrder = asyncHandler(async (req, res) => {
-  const order = await Order.find({ member_id: req.member.id });
-  res.status(200).json(order);
+  // const order = await Order.find({ member_id: req.member.id });
+  res.status(200).json(req.member);
 });
 
 // @desc    Set order
 // @route   POST /api/order/
 // @access  Private
 const setOrder = asyncHandler(async (req, res) => {
-  if (!req.body.order_status) {
+  if (!req.body.fixie_id) {
     res.status(400);
-    throw new Error('Please add a text field');
+    throw new Error('Please indicate fixie_id');
   }
 
-  const order = await Order.create({
+  if (!req.body.item) {
+    res.status(400);
+    throw new Error('Please indicate items in order');
+  }
+
+  let orderObj = {
     member_id: req.member.id,
-    order_status: req.body.order_status,
-  });
-  // fixie_id: req.fixie.id,
+    fixie_id: req.body.fixie_id,
+    status: 'CREATED',
+  };
+
+  // const service = Service.findById(req.body.item[0].service_id);
+  // res.status(200).json(service);
+
+  req.body['total'] = 0;
+  if (req.body.item) {
+    for (element of req.body.item) {
+      const service = await Service.findById(element.service_id);
+      element['tag'] = service.tag;
+      element['brand'] = service.brand;
+      element['type'] = service.type;
+      element['capacity'] = service.capacity;
+      element['speed'] = service.speed;
+      element['price'] = service.price;
+      req.body['total'] += service.price;
+    }
+
+    orderObj['item'] = req.body.item;
+    orderObj['total'] = req.body.total;
+  } else if (req.body.quote_id) {
+    total = Quotation.findById(element.quote_id);
+    orderObj['quote_id'] = req.body.quote_id;
+  }
+
+  const order = await Order.create(orderObj);
 
   res.status(200).json(order);
 });
@@ -40,19 +71,26 @@ const updateOrder = asyncHandler(async (req, res) => {
     throw new Error('Order not found');
   }
 
-  // Check for member
-  if (!req.member) {
+  // Check for user
+  if (!req.fixie && !req.member) {
     res.status(401);
-    throw new Error('Member not found');
+    throw new Error('User not found');
   }
 
-  // Make sure order belongs to member
-  if (order.member_id.toString() !== req.member._id) {
+  // Make sure order belongs to user
+  if (
+    req.fixie
+      ? order.fixie_id.toString() !== req.fixie.id
+      : order.member_id.toString() !== req.member.id
+  ) {
     res.status(401);
     throw new Error('Unauthorized access to order');
   }
 
-  const updatedOrder = await Order.findByIdAndUpdate(req.params.id, req.body, {
+  var filterObj = {};
+  filterObj['status'] = req.body['status'];
+
+  const updatedOrder = await Order.findByIdAndUpdate(req.params.id, filterObj, {
     new: true,
   });
   res.status(200).json(updatedOrder);
@@ -81,14 +119,8 @@ const deleteOrder = asyncHandler(async (req, res) => {
     throw new Error('Unauthorized access to order');
   }
 
-  const removedOrder = await order.remove();
-  // Order.deleteOne({ _id: req.params.id }, function(err, result) {
-  //   if (err) {
-  //     console.err(err);
-  //   } else {
-  //     res.json(result);
-  //   }
-  // });
+  await order.remove();
+
   res.status(200).json({ id: req.params.id });
 });
 

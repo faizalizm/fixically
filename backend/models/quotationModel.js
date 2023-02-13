@@ -37,7 +37,7 @@ const quotationSchema = mongoose.Schema(
       required: [true, 'Please add feedback'],
     },
     price: {
-      type: String,
+      type: Number,
       required: [true, 'Please add price'],
     },
   },
@@ -46,4 +46,4 @@ const quotationSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.Model('Quotation', quotationSchema);
+module.exports = mongoose.model('Quotation', quotationSchema);

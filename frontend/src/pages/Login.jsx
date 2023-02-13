@@ -20,21 +20,22 @@ import {
   TabPane,
   Row,
   Col,
+  CardHeader,
 } from 'reactstrap';
 
 function Login() {
   const [formData, setFormData] = useState({
     mail: '',
     password: '',
-    tab: 1,
+    userType: 2,
   });
 
-  const { mail, password, tab } = formData;
+  const { mail, password, userType } = formData;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { member, isLoading, isError, isSuccess, message } = useSelector(
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
@@ -43,12 +44,12 @@ function Login() {
       toast.error(message);
     }
 
-    if (isSuccess || member) {
+    if (isSuccess || user) {
       navigate('/dashboard');
     }
 
     dispatch(reset());
-  }, [member, isError, isSuccess, message, navigate, dispatch]);
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -60,19 +61,20 @@ function Login() {
   const onClick = (index) => {
     setFormData((prevState) => ({
       ...prevState,
-      tab: index,
+      userType: index,
     }));
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const memberData = {
+    const userData = {
       mail,
       password,
+      userType,
     };
 
-    dispatch(login(memberData));
+    dispatch(login(userData));
   };
 
   if (isLoading) {
@@ -82,9 +84,12 @@ function Login() {
   return (
     <>
       <Container className="vh-100">
-        <Row>
-          <Col>
-            <Card></Card>
+        <Row className="mh-100">
+          <Col className="d-flex align-items-center">
+            <img
+              src={require('../assets/img/loginIllustration.png')}
+              alt="Login Illustration"
+            />
           </Col>
           <Col>
             <h4 className="font-weight-bolder">Login to your account</h4>
@@ -101,25 +106,25 @@ function Login() {
                   >
                     <NavItem>
                       <NavLink
-                        aria-selected={tab === 1}
+                        aria-selected={userType === 2}
                         className={classnames('mb-sm-3 mb-md-0', {
-                          active: tab === 1,
+                          active: userType === 2,
                         })}
-                        onClick={() => onClick(1)}
+                        onClick={() => onClick(2)}
                         href="#pablo"
                         role="tab"
                       >
                         <i className="ni ni-cloud-upload-96 mr-2" />
-                        Member{tab}
+                        Member{userType}
                       </NavLink>
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        aria-selected={tab === 2}
+                        aria-selected={userType === 1}
                         className={classnames('mb-sm-3 mb-md-0', {
-                          active: tab === 2,
+                          active: userType === 1,
                         })}
-                        onClick={() => onClick(2)}
+                        onClick={() => onClick(1)}
                         href="#pablo"
                         role="tab"
                       >
@@ -131,10 +136,11 @@ function Login() {
                 </div>
                 <Card className="shadow">
                   <CardBody>
-                    <TabContent activeTab={'iconTabs' + tab}>
-                      <TabPane tabId="iconTabs1">
+                    <TabContent activeTab={'iconTabs' + userType}>
+                      <TabPane tabId="iconTabs2">
                         <form onSubmit={onSubmit}>
                           <div className="form-group">
+                            <input type="hidden" name="userType" value="2" />
                             <input
                               type="email"
                               className="form-control"
@@ -158,18 +164,42 @@ function Login() {
                           </div>
                           <div className="form-group">
                             <button type="submit" className="btn btn-block">
-                              Register
+                              Login as a Member
                             </button>
                           </div>
                         </form>
                       </TabPane>
-                      <TabPane tabId="iconTabs2">
-                        <p className="description">
-                          Cosby sweater eu banh mi, qui irure terry richardson
-                          ex squid. Aliquip placeat salvia cillum iphone. Seitan
-                          aliquip quis cardigan american apparel, butcher
-                          voluptate nisi qui.
-                        </p>
+                      <TabPane tabId="iconTabs1">
+                        <form onSubmit={onSubmit}>
+                          <div className="form-group">
+                            <input type="hidden" name="usertype" value="1" />
+                            <input
+                              type="email"
+                              className="form-control"
+                              id="mail"
+                              name="mail"
+                              value={mail}
+                              placeholder="abc@gmail.com"
+                              onChange={onChange}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="password"
+                              className="form-control"
+                              id="password"
+                              name="password"
+                              value={password}
+                              placeholder="********"
+                              onChange={onChange}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <button type="submit" className="btn btn-block">
+                              Login as Fixie
+                            </button>
+                          </div>
+                        </form>
                       </TabPane>
                     </TabContent>
                   </CardBody>

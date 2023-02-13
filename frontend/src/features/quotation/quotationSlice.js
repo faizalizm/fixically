@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import orderService from './orderService';
+import orderService from './quotationService';
 
 const initialState = {
   order: [],

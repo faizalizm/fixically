@@ -1,24 +1,27 @@
 import axios from 'axios';
 
-const API_URL = '/api/member/';
+const FIXIE_API = '/api/fixie/';
+const MEMBER_API = '/api/member/';
 
 // Register member
-const register = async (memberData) => {
-  const response = await axios.post(API_URL + 'register', memberData);
+const register = async (userData) => {
+  const API_URL = userData.userType === 1 ? FIXIE_API : MEMBER_API;
+  const response = await axios.post(API_URL + 'register', userData);
 
   if (response.data) {
-    localStorage.setItem('member', JSON.stringify(response.data));
+    localStorage.setItem('user', JSON.stringify(response.data));
   }
 
   return response.data;
 };
 
 // Login member
-const login = async (memberData) => {
-  const response = await axios.post(API_URL + 'login', memberData);
+const login = async (userData) => {
+  const API_URL = userData.userType === 1 ? FIXIE_API : MEMBER_API;
+  const response = await axios.post(API_URL + 'login', userData);
 
   if (response.data) {
-    localStorage.setItem('member', JSON.stringify(response.data));
+    localStorage.setItem('user', JSON.stringify(response.data));
   }
 
   return response.data;
@@ -26,7 +29,7 @@ const login = async (memberData) => {
 
 // Logout member
 const logout = () => {
-  localStorage.removeItem('member');
+  localStorage.removeItem('user');
   localStorage.clear();
 };
 

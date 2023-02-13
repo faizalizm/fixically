@@ -72,6 +72,36 @@ const loginMember = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update member data
+// @route   GET /api/member/update
+// @access  Private
+const updateMember = asyncHandler(async (req, res) => {
+  const member = await Member.findById(req.body.member_id);
+
+  if (!member) {
+    res.status(401);
+    throw new Error('Member not found');
+  }
+
+  // Make sure only the member can update themselves
+  if (member._id.toString() !== req.member.id) {
+    res.status(401);
+    throw new Error('Unauthorized access to member data');
+  }
+
+  // Password hashing
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashedPassword;
+  }
+
+  const updatedMember = await Member.findByIdAndUpdate(member._id, req.body, {
+    new: true,
+  });
+  res.status(200).json(updatedMember);
+});
+
 // @desc    Get member data
 // @route   GET /api/member/me
 // @access  Private
@@ -86,4 +116,4 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = { registerMember, loginMember, getMember };
+module.exports = { registerMember, loginMember, updateMember, getMember };

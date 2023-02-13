@@ -4,11 +4,13 @@ const { protect } = require('../middleware/authMiddleware');
 const {
   registerFixie,
   loginFixie,
+  updateFixie,
   getFixie,
 } = require('../controllers/FixieController');
 
 router.post('/register', registerFixie);
 router.post('/login', loginFixie);
+router.put('/update', protect, updateFixie);
 router.get('/me', protect, getFixie);
 
 module.exports = router;

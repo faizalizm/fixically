@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const Member = require('../models/memberModel');
+const Fixie = require('../models/fixieModel');
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
@@ -16,8 +17,15 @@ const protect = asyncHandler(async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get member from the token
-      req.member = await Member.findById(decoded.id).select('-password');
+      // Choose user data to store
+      if (req.originalUrl.includes('fixie')) {
+        req.fixie = await Fixie.findById(decoded.id).select('-password');
+      } else if (req.originalUrl.includes('member')) {
+        req.member = await Member.findById(decoded.id).select('-password');
+      } else {
+        req.fixie = await Fixie.findById(decoded.id).select('-password');
+        req.member = await Member.findById(decoded.id).select('-password');
+      }
 
       next();
     } catch (error) {
