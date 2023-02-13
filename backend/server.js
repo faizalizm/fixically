@@ -13,8 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api/member', require('./routes/memberRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/fixie', require('./routes/fixieRoutes'));
+app.use('/api/member', require('./routes/memberRoutes'));
 app.use('/api/order', require('./routes/orderRoutes'));
 app.use('/api/quotation', require('./routes/quotationRoutes'));
 app.use('/api/service', require('./routes/serviceRoutes'));

@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema(
   {
-    member_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'Member',
-    },
     fixie_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'Fixie',
+    },
+    member_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Member',
     },
     quote_id: {
       type: mongoose.Schema.Types.ObjectId,
