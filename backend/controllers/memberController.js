@@ -76,7 +76,7 @@ const loginMember = asyncHandler(async (req, res) => {
 // @route   GET /api/member/update
 // @access  Private
 const updateMember = asyncHandler(async (req, res) => {
-  const member = await Member.findById(req.body.member_id);
+  const member = await Member.findById(req.member.id);
 
   if (!member) {
     res.status(401);

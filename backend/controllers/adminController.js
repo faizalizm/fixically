@@ -76,7 +76,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/update
 // @access  Private
 const updateAdmin = asyncHandler(async (req, res) => {
-  const admin = await Admin.findById(req.body.admin_id);
+  const admin = await Admin.findById(req.admin.id);
 
   if (!admin) {
     res.status(401);

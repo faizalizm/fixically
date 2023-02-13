@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Argon Design System React - v1.1.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-design-system-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-design-system-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from 'react';
 import { Link } from 'react-router-dom';
 // JavaScript plugin that hides or shows a component based on your scroll
@@ -72,12 +55,12 @@ class NavBar extends React.Component {
             id="navbar-main"
           >
             <Container>
-              {/* <NavbarBrand className="mr-lg-5" to="/" tag={Link}>
+              <NavbarBrand className="mr-lg-5" to="/" tag={Link}>
                 <img
                   alt="..."
                   src={require('../../assets/img/brand/argon-react-white.png')}
                 />
-              </NavbarBrand> */}
+              </NavbarBrand>
               <button className="navbar-toggler" id="navbar_global">
                 <span className="navbar-toggler-icon" />
               </button>

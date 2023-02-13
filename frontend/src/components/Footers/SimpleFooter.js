@@ -16,7 +16,7 @@
 
 */
 /*eslint-disable*/
-import React from "react";
+import React from 'react';
 // reactstrap components
 import {
   Button,
@@ -26,8 +26,8 @@ import {
   Container,
   Row,
   Col,
-  UncontrolledTooltip
-} from "reactstrap";
+  UncontrolledTooltip,
+} from 'reactstrap';
 
 class SimpleFooter extends React.Component {
   render() {
@@ -107,7 +107,7 @@ class SimpleFooter extends React.Component {
             <Row className=" align-items-center justify-content-md-between">
               <Col md="6">
                 <div className=" copyright">
-                  © {new Date().getFullYear()}{" "}
+                  © {new Date().getFullYear()}{' '}
                   <a
                     href="https://www.creative-tim.com?ref=adsr-footer"
                     target="_blank"

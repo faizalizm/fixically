@@ -1,24 +1,6 @@
-/*!
-
-=========================================================
-* Argon Design System React - v1.1.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-design-system-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-design-system-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-/*eslint-disable*/
 import React from 'react';
 import { Link } from 'react-router-dom';
-// reactstrap components
+
 import {
   Button,
   Card,
@@ -65,10 +47,10 @@ class CardsFooter extends React.Component {
             <Row className="row-grid align-items-center my-md">
               <Col lg="6">
                 <h3 className="text-primary font-weight-light mb-2">
-                  Thank you for supporting us!
+                  Fixically
                 </h3>
                 <h4 className="mb-0 font-weight-light">
-                  Let's get in touch on any of these platforms.
+                  Solution for your laptop needs
                 </h4>
               </Col>
               <Col className="text-lg-center btn-wrapper" lg="6">
