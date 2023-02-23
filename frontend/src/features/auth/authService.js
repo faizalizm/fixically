@@ -5,7 +5,7 @@ const MEMBER_API = '/api/member/';
 
 // Register member
 const register = async (userData) => {
-  const API_URL = userData.userType === 1 ? FIXIE_API : MEMBER_API;
+  const API_URL = userData.userType === 'fixie' ? FIXIE_API : MEMBER_API;
   const response = await axios.post(API_URL + 'register', userData);
 
   if (response.data) {
@@ -17,7 +17,7 @@ const register = async (userData) => {
 
 // Login member
 const login = async (userData) => {
-  const API_URL = userData.userType === 1 ? FIXIE_API : MEMBER_API;
+  const API_URL = userData.userType === 'fixie' ? FIXIE_API : MEMBER_API;
   const response = await axios.post(API_URL + 'login', userData);
 
   if (response.data) {
