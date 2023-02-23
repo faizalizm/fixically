@@ -10,11 +10,20 @@ import { getOrder, reset } from '../../features/order/orderSlice';
 import { Sidebar } from '../../components/Sidebar';
 
 import { useTheme } from '@mui/system';
-import { Card, CardContent, styled, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  styled,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 import { DataGrid } from '@mui/x-data-grid';
+
 import { YellowDiv } from '../../components/YellowDiv';
+import { StatusChip } from '../../components/StatusChip';
 
 function Order() {
   const theme = useTheme();
@@ -42,35 +51,75 @@ function Order() {
     };
   }, [user, navigate, isError, message, dispatch]);
 
-  // if (isLoading) {
-  //   return <Spinner />;
-  // }
-
   const columns = [
-    { field: '_id', headerName: 'Order', width: 150 },
-    { field: 'item.brand', headerName: 'Service', width: 150 },
-    { field: 'total', headerName: 'Total', width: 150 },
-    { field: 'createdAt', headerName: 'Date', width: 150 },
-    { field: 'status', headerName: 'Status', width: 150 },
+    {
+      field: '_id',
+      headerName: 'Order',
+      minWidth: 100,
+      flex: 1,
+      headerClassName: 'firstCol',
+    },
+    {
+      field: 'item',
+      headerName: 'Service',
+      minWidth: 250,
+      flex: 1,
+      renderCell: (params) => (
+        <ul className="flex">
+          {params.value.map((item, index) => (
+            <li key={index}>{item.brand}</li>
+          ))}
+        </ul>
+      ),
+    },
+    {
+      field: 'total',
+      headerName: 'Total',
+      minWidth: 150,
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'createdAt',
+      headerName: 'Date',
+      type: 'dateTime',
+      minWidth: 250,
+      flex: 1,
+      valueGetter: ({ value }) => value && new Date(value),
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      minWidth: 250,
+      flex: 1,
+      renderCell: (params) => {
+        return <StatusChip label={params.row.status} />;
+      },
+      headerClassName: 'lastCol',
+    },
   ];
 
   // Custom Styling
   const TableCard = styled(Card)({
-    display: 'flex',
     padding: '20px 40px',
     boxShadow:
       '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
     borderRadius: '20px',
-    gap: '32px',
-    alignItems: 'stretch',
   });
 
   return (
     <>
       <UserNavbar />
-      <Grid container spacing={6}>
-        <Sidebar />
-        <Grid item xs={12} sm={6}>
+      <Container
+        maxWidth={false}
+        disableGutters
+        sx={{ display: 'flex', gap: '20px' }}
+      >
+        <Box sx={{ height: '100%', width: '350px' }}>
+          <Sidebar />
+        </Box>
+        <Box width="100%">
           <Typography
             variant="h3"
             color={theme.palette.black.main}
@@ -81,31 +130,64 @@ function Order() {
           <YellowDiv />
 
           <TableCard>
+            <Typography
+              variant="h3"
+              color={theme.palette.black.main}
+              sx={{ mt: 6 }}
+            ></Typography>
             <CardContent sx={{ height: 700, width: '100%' }}>
-              <DataGrid
-                getRowId={(order) => order._id}
-                rows={order}
-                columns={columns}
+              <Box
                 sx={{
-                  boxShadow: 2,
-                  '& .MuiDataGrid-cell:hover': {
-                    color: theme.palette.primary.main,
+                  height: 700,
+                  width: '100%',
+                  '& .firstCol': {
+                    borderRadius: '20px 0 20px 0',
+                  },
+                  '& .lastCol': {
+                    borderRadius: '0 20px 20px 0',
                   },
                 }}
-              />
-              {/* {order.length > 0 ? (
+              >
+                <DataGrid
+                  getRowId={(order) => order._id}
+                  getRowHeight={() => 'auto'}
+                  rows={order}
+                  columns={columns}
+                  sx={{
+                    '&.MuiDataGrid-root': {
+                      border: 'none',
+                      boxShadow: 'none',
+                    },
+                    '.MuiDataGrid-columnHeader': {
+                      backgroundColor: theme.palette.white.tableHeader,
+                    },
+                    '.MuiDataGrid-columnHeaderTitle': {
+                      backgroundColor: theme.palette.white.tableHeader,
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                    },
+                    '.MuiDataGrid-columnSeparator': {
+                      display: 'none',
+                    },
+                    '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+                      py: '22px',
+                    },
+                  }}
+                />
+                {/* {order.length > 0 ? (
                 <div className="goals">
-                  {order.map((order) => (
-                    <OrderItem key={order._id} order={order} />
+                {order.map((order) => (
+                  <OrderItem key={order._id} order={order} />
                   ))}
-                </div>
-              ) : (
-                <h3>No order found</h3>
-              )} */}
+                  </div>
+                  ) : (
+                    <h3>No order found</h3>
+                  )} */}
+              </Box>
             </CardContent>
           </TableCard>
-        </Grid>
-      </Grid>
+        </Box>
+      </Container>
     </>
   );
 }

@@ -18,6 +18,7 @@ export const theme = createTheme({
     white: {
       main: '#FFFFFF',
       background: '#F5F5F7',
+      tableHeader: '#F3F6F9',
     },
   },
   spacing: [0, 4, 8, 16, 20, 24, 32, 64],
@@ -33,9 +34,15 @@ export const theme = createTheme({
       textTransform: 'none',
       fontWeight: '700',
     },
-    link: {
-      textTransform: 'none',
-      fontWeight: '700',
-    },
+    // components: {
+    //   MuiChip: {
+    //     styleOverrides: {
+    //       root: {
+    //         fontWeight: '800',
+    //         padding: '20px',
+    //       },
+    //     },
+    //   },
+    // },
   },
 });

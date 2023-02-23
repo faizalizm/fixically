@@ -20,7 +20,7 @@ export const Sidebar = () => {
   const [openAccount, setopenAccount] = useState(true);
 
   return (
-    <Grid item xs={2} sm={2}>
+    <>
       <List component="nav">
         {/* Dashboard */}
         <ListItemButton
@@ -100,6 +100,6 @@ export const Sidebar = () => {
           </List>
         </Collapse>
       </List>
-    </Grid>
+    </>
   );
 };
