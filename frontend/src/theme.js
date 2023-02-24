@@ -34,6 +34,12 @@ export const theme = createTheme({
       textTransform: 'none',
       fontWeight: '700',
     },
+    root: {
+      '& .react-grid-Container': {
+        color: 'red',
+        // color: theme.palette.text.color
+      },
+    },
     // components: {
     //   MuiChip: {
     //     styleOverrides: {

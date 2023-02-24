@@ -4,10 +4,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
+import AdminLogin from './pages/AdminLogin';
 import Register from './pages/Register';
 
 import Dashboard from './pages/protected/Dashboard';
-import Order from './pages/protected/Order';
+import Order from './pages/protected/Orders';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/fx-admin" element={<AdminLogin />} />
           <Route path="/register/:registerType" element={<Register />} />
 
           <Route path="/dashboard" element={<Dashboard />} />

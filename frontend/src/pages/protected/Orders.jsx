@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { UserNavbar } from '../../components/UserNavbar';
@@ -12,6 +12,7 @@ import { Sidebar } from '../../components/Sidebar';
 import { useTheme } from '@mui/system';
 import {
   Box,
+  Button,
   Card,
   CardContent,
   Container,
@@ -19,8 +20,9 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-
 import { DataGrid } from '@mui/x-data-grid';
+
+import NavigateNextOutlined from '@mui/icons-material/NavigateNextOutlined';
 
 import { YellowDiv } from '../../components/YellowDiv';
 import { StatusChip } from '../../components/StatusChip';
@@ -55,15 +57,12 @@ function Order() {
     {
       field: '_id',
       headerName: 'Order',
-      minWidth: 100,
-      flex: 1,
       headerClassName: 'firstCol',
+      flex: 1,
     },
     {
       field: 'item',
       headerName: 'Service',
-      minWidth: 250,
-      flex: 1,
       renderCell: (params) => (
         <ul className="flex">
           {params.value.map((item, index) => (
@@ -71,32 +70,49 @@ function Order() {
           ))}
         </ul>
       ),
+      flex: 1,
+      sortable: false,
     },
     {
       field: 'total',
       headerName: 'Total',
-      minWidth: 150,
-      flex: 1,
       align: 'center',
       headerAlign: 'center',
+      flex: 1,
     },
     {
       field: 'createdAt',
       headerName: 'Date',
       type: 'dateTime',
-      minWidth: 250,
-      flex: 1,
       valueGetter: ({ value }) => value && new Date(value),
+      flex: 1,
     },
     {
       field: 'status',
       headerName: 'Status',
-      minWidth: 250,
-      flex: 1,
       renderCell: (params) => {
         return <StatusChip label={params.row.status} />;
       },
+      flex: 1,
+    },
+    {
+      field: 'View',
+      headerName: '',
+      renderCell: (params) => {
+        return (
+          <StyledButton
+            variant="contained"
+            component={Link}
+            to={'/order/' + params.row._id}
+            endIcon={<NavigateNextOutlined />}
+          >
+            View
+          </StyledButton>
+        );
+      },
       headerClassName: 'lastCol',
+      flex: 1,
+      sortable: false,
     },
   ];
 
@@ -106,6 +122,11 @@ function Order() {
     boxShadow:
       '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
     borderRadius: '20px',
+  });
+
+  const StyledButton = styled(Button)({
+    width: '100%',
+    color: theme.palette.white.main,
   });
 
   return (
@@ -119,7 +140,7 @@ function Order() {
         <Box sx={{ height: '100%', width: '350px' }}>
           <Sidebar />
         </Box>
-        <Box width="100%">
+        <Box sx={{ width: '100%' }}>
           <Typography
             variant="h3"
             color={theme.palette.black.main}
@@ -129,52 +150,58 @@ function Order() {
           </Typography>
           <YellowDiv />
 
-          <TableCard>
-            <Typography
-              variant="h3"
-              color={theme.palette.black.main}
-              sx={{ mt: 6 }}
-            ></Typography>
-            <CardContent sx={{ height: 700, width: '100%' }}>
-              <Box
-                sx={{
-                  height: 700,
-                  width: '100%',
-                  '& .firstCol': {
-                    borderRadius: '20px 0 20px 0',
-                  },
-                  '& .lastCol': {
-                    borderRadius: '0 20px 20px 0',
-                  },
-                }}
-              >
-                <DataGrid
-                  getRowId={(order) => order._id}
-                  getRowHeight={() => 'auto'}
-                  rows={order}
-                  columns={columns}
-                  sx={{
-                    '&.MuiDataGrid-root': {
-                      border: 'none',
-                      boxShadow: 'none',
-                    },
-                    '.MuiDataGrid-columnHeader': {
-                      backgroundColor: theme.palette.white.tableHeader,
-                    },
-                    '.MuiDataGrid-columnHeaderTitle': {
-                      backgroundColor: theme.palette.white.tableHeader,
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                    },
-                    '.MuiDataGrid-columnSeparator': {
-                      display: 'none',
-                    },
-                    '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
-                      py: '22px',
-                    },
-                  }}
-                />
-                {/* {order.length > 0 ? (
+          <Grid container spacing={2}>
+            <Grid xs={10}>
+              <TableCard>
+                <Typography
+                  variant="h3"
+                  color={theme.palette.black.main}
+                  sx={{ mt: 6 }}
+                ></Typography>
+                <CardContent sx={{ height: 700, width: '100%' }}>
+                  <Box
+                    sx={{
+                      height: 700,
+                      '& .firstCol': {
+                        borderRadius: '20px 0 20px 0',
+                      },
+                      '& .lastCol': {
+                        borderRadius: '0 20px 20px 0',
+                      },
+                      '& .MuiDataGrid-cell:focus': {
+                        outline: 'none',
+                      },
+                    }}
+                  >
+                    <DataGrid
+                      getRowId={(order) => order._id}
+                      getRowHeight={() => 'auto'}
+                      rowsPerPageOptions={[5, 10, 20]}
+                      rows={order}
+                      columns={columns}
+                      sx={{
+                        '&.MuiDataGrid-root': {
+                          border: 'none',
+                          boxShadow: 'none',
+                        },
+                        '.MuiDataGrid-columnHeader': {
+                          backgroundColor: theme.palette.white.tableHeader,
+                        },
+                        '.MuiDataGrid-columnHeaderTitle': {
+                          backgroundColor: theme.palette.white.tableHeader,
+                          fontWeight: '800',
+                          textTransform: 'uppercase',
+                        },
+                        // '.MuiDataGrid-columnSeparator': {
+                        //   display: 'none',
+                        // },
+                        '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell':
+                          {
+                            py: '22px',
+                          },
+                      }}
+                    />
+                    {/* {order.length > 0 ? (
                 <div className="goals">
                 {order.map((order) => (
                   <OrderItem key={order._id} order={order} />
@@ -183,9 +210,11 @@ function Order() {
                   ) : (
                     <h3>No order found</h3>
                   )} */}
-              </Box>
-            </CardContent>
-          </TableCard>
+                  </Box>
+                </CardContent>
+              </TableCard>
+            </Grid>
+          </Grid>
         </Box>
       </Container>
     </>
