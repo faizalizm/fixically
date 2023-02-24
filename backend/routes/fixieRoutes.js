@@ -6,7 +6,7 @@ const {
   loginFixie,
   updateFixie,
   getFixie,
-} = require('../controllers/FixieController');
+} = require('../controllers/fixieController');
 
 router.post('/register', registerFixie);
 router.post('/login', loginFixie);
