@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { register, reset } from '../features/auth/authSlice';
 
-import { Navbar } from '../components/Navbar';
+import { Navbar } from '../components/NotNavbar';
 import { YellowDiv } from '../components/YellowDiv';
 import {
   Card,
