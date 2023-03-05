@@ -1,8 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { ThemeProvider } from '@mui/material';
+
 import { store } from './app/store';
+
+import { CssBaseline, ThemeProvider } from '@mui/material';
 
 import App from './App';
 import { theme } from './theme';
@@ -16,6 +18,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Provider store={store}>
         <App />
       </Provider>

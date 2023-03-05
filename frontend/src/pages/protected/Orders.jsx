@@ -24,8 +24,7 @@ import { DataGrid } from '@mui/x-data-grid';
 
 import NavigateNextOutlined from '@mui/icons-material/NavigateNextOutlined';
 
-import { YellowDiv } from '../../components/YellowDiv';
-import { StatusChip } from '../../components/StatusChip';
+import { YellowDiv, StatusChip } from '../../theme';
 
 function Order() {
   const theme = useTheme();

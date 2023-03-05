@@ -2,20 +2,18 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import { login, reset } from '../features/auth/authSlice';
 
-import { Navbar } from '../components/NotNavbar';
-import { YellowDiv } from '../components/YellowDiv';
+import { CardBox, SubmitButton, YellowDiv } from '../theme';
+import { Navbar } from '../components/Navbar';
 
 import {
-  Card,
   CardContent,
   Container,
   Typography,
   TextField,
-  styled,
   useTheme,
-  Button,
   Box,
   Link,
   Tabs,
@@ -77,25 +75,6 @@ function Login() {
     dispatch(login(userData));
   };
 
-  // Custom Styling
-  const StyledCard = styled(Card)({
-    display: 'flex',
-    padding: '20px 40px',
-    boxShadow:
-      '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
-    borderRadius: '20px',
-    gap: '32px',
-    alignItems: 'stretch',
-  });
-
-  const StyledButton = styled(Button)({
-    fontSize: '1.00em',
-    width: '100%',
-    height: '42px',
-    color: theme.palette.white.main,
-    alignSelf: 'flex-end',
-  });
-
   return (
     <>
       <Navbar />
@@ -129,7 +108,7 @@ function Login() {
                   <Tab value="member" label="Member Login" />
                   <Tab value="fixie" label="Fixie Login" />
                 </Tabs>
-                <StyledCard>
+                <CardBox>
                   <CardContent
                     sx={{
                       width: '100%',
@@ -174,15 +153,15 @@ function Login() {
                         fullWidth
                       />
                     </Box>
-                    <StyledButton
+                    <SubmitButton
                       variant="contained"
                       type="submit"
                       sx={{ mt: 7 }}
                     >
                       Login
-                    </StyledButton>
+                    </SubmitButton>
                   </CardContent>
-                </StyledCard>
+                </CardBox>
               </Box>
               <Box display="flex" sx={{ mt: 4 }} justifyContent="center">
                 <Typography variant="h5" color={theme.palette.black.main}>

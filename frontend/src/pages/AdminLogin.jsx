@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import { login, reset } from '../features/auth/authSlice';
 
-import { Navbar } from '../components/NotNavbar';
-import { YellowDiv } from '../components/YellowDiv';
+import { Navbar } from '../components/Navbar';
+import { YellowDiv, SubmitButton } from '../theme';
 
 import {
   Card,
@@ -77,14 +78,6 @@ function AdminLogin() {
     borderRadius: '20px',
   });
 
-  const StyledButton = styled(Button)({
-    fontSize: '1.00em',
-    width: '100%',
-    height: '42px',
-    color: theme.palette.white.main,
-    alignSelf: 'flex-end',
-  });
-
   return (
     <>
       {/* <Navbar /> */}
@@ -147,13 +140,13 @@ function AdminLogin() {
                       fullWidth
                     />
                   </Box>
-                  <StyledButton
+                  <SubmitButton
                     variant="contained"
                     type="submit"
                     sx={{ mt: 7 }}
                   >
                     Login
-                  </StyledButton>
+                  </SubmitButton>
                 </CardContent>
               </StyledCard>
             </Box>

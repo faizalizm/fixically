@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import { register, reset } from '../features/auth/authSlice';
 
-import { Navbar } from '../components/NotNavbar';
-import { YellowDiv } from '../components/YellowDiv';
+import { YellowDiv } from '../theme';
+import { Navbar } from '../components/Navbar';
+
 import {
   Card,
   CardContent,

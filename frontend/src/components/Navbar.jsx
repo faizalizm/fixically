@@ -6,11 +6,11 @@ import {
   Button,
   Typography,
   Container,
-  Link,
 } from '@mui/material';
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { logout, reset } from '../features/auth/authSlice';
 
@@ -50,14 +50,16 @@ export const Navbar = () => {
       <Container sx={{ height: '88px' }}>
         <StyledAppbar position="sticky">
           <StyledToolbar>
-            <Box
-              component="img"
-              sx={{
-                width: 150,
-              }}
-              alt="Example Alt"
-              src={require('../assets/brand/fixically-stretch.webp')}
-            />
+            <Link to="/">
+              <Box
+                component="img"
+                alt="Example Alt"
+                src={require('../assets/brand/fixically-stretch.webp')}
+                sx={{
+                  width: 150,
+                }}
+              />
+            </Link>
             <NavBox>
               <Button
                 value="/services"
@@ -68,7 +70,7 @@ export const Navbar = () => {
                 <Typography variant="h6">Services</Typography>
               </Button>
               <Button
-                onClick={handleRedirect}
+                value="/about"
                 variant="text"
                 color="nav"
                 onClick={handleRedirect}
