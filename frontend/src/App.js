@@ -12,7 +12,13 @@ import AdminLogin from './pages/AdminLogin';
 import Register from './pages/Register';
 
 import Dashboard from './pages/protected/Dashboard';
-import Order from './pages/protected/Orders';
+import Profile from './pages/protected/Profile';
+import Application from './pages/protected/Application';
+import Orders from './pages/protected/Orders';
+import Quotations from './pages/protected/Quotations';
+import Reviews from './pages/protected/Reviews';
+import Services from './pages/protected/Services';
+import CreateService from './pages/protected/CreateService';
 
 function App() {
   return (
@@ -22,7 +28,7 @@ function App() {
           {/* Main Pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
-          {/* <Route path="/services"  /> */}
+          {/* <Route path="/service" element={<Services />} /> */}
           {/* <Route path="/becomefixie"  /> */}
 
           {/* Search Flow */}
@@ -37,7 +43,16 @@ function App() {
 
           {/* Protected Pages */}
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/orders" element={<Order />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/application" element={<Application />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/reviews" element={<Reviews />} />
+
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/create" element={<CreateService />} />
+          <Route path="/services/:service_id" element={<CreateService />} />
+
+          <Route path="/quotations" element={<Quotations />} />
         </Routes>
       </Router>
       <ToastContainer />

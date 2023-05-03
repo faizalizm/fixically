@@ -3,10 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { UserNavbar } from '../../components/UserNavbar';
-import OrderForm from '../../components/OrderForm';
-import OrderItem from '../../components/OrderItem';
 
-import { getOrder, reset } from '../../features/order/orderSlice';
+import { getQuotation, reset } from '../../features/quotation/quotationSlice';
 import { Sidebar } from '../../components/Sidebar';
 
 import { useTheme } from '@mui/system';
@@ -25,14 +23,14 @@ import NavigateNextOutlined from '@mui/icons-material/NavigateNextOutlined';
 
 import { YellowDiv, StatusChip } from '../../theme';
 
-function Orders() {
+function Quotations() {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { order, isLoading, isError, message } = useSelector(
-    (state) => state.order
+  const { quotation, isLoading, isError, message } = useSelector(
+    (state) => state.quotation
   );
 
   useEffect(() => {
@@ -44,7 +42,7 @@ function Orders() {
       navigate('/login');
     }
 
-    dispatch(getOrder());
+    dispatch(getQuotation());
 
     return () => {
       dispatch(reset());
@@ -54,26 +52,20 @@ function Orders() {
   const columns = [
     {
       field: '_id',
-      headerName: 'Order',
+      headerName: 'Quotation',
       headerClassName: 'firstCol',
       flex: 1,
     },
     {
-      field: 'item',
-      headerName: 'Service',
-      renderCell: (params) => (
-        <ul className="flex">
-          {params.value.map((item, index) => (
-            <li key={index}>{item.brand}</li>
-          ))}
-        </ul>
-      ),
+      field: 'problem',
+      headerName: 'Problem',
+      align: 'center',
+      headerAlign: 'center',
       flex: 1,
-      sortable: false,
     },
     {
-      field: 'total',
-      headerName: 'Total',
+      field: 'description',
+      headerName: 'Description',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
@@ -140,7 +132,7 @@ function Orders() {
             color={theme.palette.black.main}
             sx={{ mt: 6 }}
           >
-            Orders
+            Quotation Requests
           </Typography>
           <YellowDiv />
 
@@ -168,10 +160,10 @@ function Orders() {
                     }}
                   >
                     <DataGrid
-                      getRowId={(order) => order._id}
+                      getRowId={(quotation) => quotation._id}
                       getRowHeight={() => 'auto'}
                       rowsPerPageOptions={[5, 10, 20]}
-                      rows={order}
+                      rows={quotation}
                       columns={columns}
                       sx={{
                         '&.MuiDataGrid-root': {
@@ -195,15 +187,6 @@ function Orders() {
                           },
                       }}
                     />
-                    {/* {order.length > 0 ? (
-                <div className="goals">
-                {order.map((order) => (
-                  <OrderItem key={order._id} order={order} />
-                  ))}
-                  </div>
-                  ) : (
-                    <h3>No order found</h3>
-                  )} */}
                   </Box>
                 </CardContent>
               </TableCard>
@@ -215,4 +198,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Quotations;

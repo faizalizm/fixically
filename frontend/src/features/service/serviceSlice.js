@@ -1,21 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import quotationService from './quotationService';
+import serviceService from './serviceService';
 
 const initialState = {
-  quotation: [],
+  service: [],
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
 };
 
-// Create a quotation
-export const createQuotation = createAsyncThunk(
-  'quotation/create',
-  async (quotationData, thunkAPI) => {
+// Create a service
+export const createService = createAsyncThunk(
+  'service/create',
+  async (serviceData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.createQuotation(quotationData, token);
+      return await serviceService.createService(serviceData, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -28,13 +28,13 @@ export const createQuotation = createAsyncThunk(
   }
 );
 
-// Get quotation
-export const getQuotation = createAsyncThunk(
-  'quotation/getAll',
+// Get service
+export const getService = createAsyncThunk(
+  'service/getAll',
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.getQuotation(token);
+      return await serviceService.getService(token);
     } catch (error) {
       const message =
         (error.response &&
@@ -47,13 +47,32 @@ export const getQuotation = createAsyncThunk(
   }
 );
 
-// Delete an quotation
-export const deleteQuotation = createAsyncThunk(
-  'quotation/delete',
+// Find service
+export const findService = createAsyncThunk(
+  'service/getOne',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await serviceService.findService(token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Delete an service
+export const deleteService = createAsyncThunk(
+  'service/delete',
   async (id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.deleteQuotation(id, token);
+      return await serviceService.deleteService(id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -66,51 +85,51 @@ export const deleteQuotation = createAsyncThunk(
   }
 );
 
-export const quotationSlice = createSlice({
-  name: 'quotation',
+export const serviceSlice = createSlice({
+  name: 'service',
   initialState,
   reducers: {
     reset: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createQuotation.pending, (state) => {
+      .addCase(createService.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createQuotation.fulfilled, (state, action) => {
+      .addCase(createService.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation.push(action.payload);
+        state.service.push(action.payload);
       })
-      .addCase(createQuotation.rejected, (state, action) => {
+      .addCase(createService.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getQuotation.pending, (state) => {
+      .addCase(getService.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getQuotation.fulfilled, (state, action) => {
+      .addCase(getService.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation = action.payload;
+        state.service = action.payload;
       })
-      .addCase(getQuotation.rejected, (state, action) => {
+      .addCase(getService.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deleteQuotation.pending, (state) => {
+      .addCase(deleteService.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteQuotation.fulfilled, (state, action) => {
+      .addCase(deleteService.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation = state.quotation.filter(
-          (quotation) => quotation._id !== action.payload.id
+        state.service = state.service.filter(
+          (service) => service._id !== action.payload.id
         );
       })
-      .addCase(deleteQuotation.rejected, (state, action) => {
+      .addCase(deleteService.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -118,5 +137,5 @@ export const quotationSlice = createSlice({
   },
 });
 
-export const { reset } = quotationSlice.actions;
-export default quotationSlice.reducer;
+export const { reset } = serviceSlice.actions;
+export default serviceSlice.reducer;

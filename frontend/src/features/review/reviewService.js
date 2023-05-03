@@ -1,22 +1,22 @@
 import axios from 'axios';
 
-const API_URL = '/api/quotation/';
+const API_URL = '/api/review/';
 
-// Create an quotation
-const createQuotation = async (quotationData, token) => {
+// Create a review
+const createReview = async (reviewData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
 
-  const response = await axios.post(API_URL, quotationData, config);
+  const response = await axios.post(API_URL, reviewData, config);
 
   return response.data;
 };
 
-// Get quotation
-const getQuotation = async (token) => {
+// Get review
+const getReview = async (token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -28,8 +28,8 @@ const getQuotation = async (token) => {
   return response.data;
 };
 
-// Delete quotation
-const deleteQuotation = async (id, token) => {
+// Delete review
+const deleteReview = async (id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -41,10 +41,10 @@ const deleteQuotation = async (id, token) => {
   return response.data;
 };
 
-const quotationService = {
-  createQuotation,
-  getQuotation,
-  deleteQuotation,
+const reviewService = {
+  createReview,
+  getReview,
+  deleteReview,
 };
 
-export default quotationService;
+export default reviewService;

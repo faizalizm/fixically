@@ -44,23 +44,19 @@ const fixieSchema = mongoose.Schema(
       required: [true, 'Please add company city'],
     },
     application: {
-      status: {
-        type: String,
-        default: 'created',
-      },
-      date: {
+      submit_date: {
         type: Date,
-        default: Date.now,
+      },
+      result_date: {
+        type: Date,
       },
     },
     os_support: {
       windows: {
         type: String,
-        required: [true, 'Please add fixie windows support'],
       },
       mac: {
         type: String,
-        required: [true, 'Please add mac support'],
       },
     },
   },

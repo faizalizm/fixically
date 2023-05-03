@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { logout, reset } from '../features/auth/authSlice';
 
+import ArrowDropDownOutlined from '@mui/icons-material/ArrowDropDownOutlined';
+import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined';
 import {
   AppBar,
   Avatar,
@@ -15,8 +17,6 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import ArrowDropDownOutlined from '@mui/icons-material/ArrowDropDownOutlined';
-import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',

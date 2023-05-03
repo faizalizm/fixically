@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 
+import { logout, reset } from '../features/auth/authSlice';
+
+import InboxIcon from '@mui/icons-material/Inbox';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import DashboardIcon from '@mui/icons-material/DashboardOutlined';
+import AccountIcon from '@mui/icons-material/AccountCircleOutlined';
 import {
   Collapse,
   List,
@@ -8,16 +16,21 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-
-import InboxIcon from '@mui/icons-material/Inbox';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [selectedPage, setSelectedPage] = useState('Dashboard');
   const [openManage, setopenManage] = useState(true);
   const [openAccount, setopenAccount] = useState(true);
+
+  const onLogout = () => {
+    dispatch(logout());
+    dispatch(reset());
+    navigate('/');
+  };
 
   return (
     <>
@@ -31,7 +44,7 @@ export const Sidebar = () => {
           onClick={(e) => setSelectedPage('Dashboard')}
         >
           <ListItemIcon>
-            <InboxIcon />
+            <DashboardIcon />
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItemButton>
@@ -57,18 +70,27 @@ export const Sidebar = () => {
               <ListItemText primary="Orders" inset />
             </ListItemButton>
             <ListItemButton
+              button
+              component={Link}
+              to="/reviews"
               sx={{ pl: 4 }}
               onClick={(e) => setSelectedPage('Reviews')}
             >
               <ListItemText primary="Reviews" inset />
             </ListItemButton>
             <ListItemButton
+              button
+              component={Link}
+              to="/quotations"
               sx={{ pl: 4 }}
               onClick={(e) => setSelectedPage('Quote Request')}
             >
               <ListItemText primary="Quote Request" inset />
             </ListItemButton>
             <ListItemButton
+              button
+              component={Link}
+              to="/services"
               sx={{ pl: 4 }}
               onClick={(e) => setSelectedPage('Services')}
             >
@@ -80,7 +102,7 @@ export const Sidebar = () => {
         {/* Account */}
         <ListItemButton onClick={(e) => setopenAccount(!openAccount)}>
           <ListItemIcon>
-            <InboxIcon />
+            <AccountIcon />
           </ListItemIcon>
           <ListItemText primary="Account" />
           {openAccount ? <ExpandLess /> : <ExpandMore />}
@@ -89,12 +111,24 @@ export const Sidebar = () => {
         <Collapse in={openAccount} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItemButton
+              button
+              component={Link}
+              to="/application"
+              sx={{ pl: 4 }}
+              onClick={(e) => setSelectedPage('Application')}
+            >
+              <ListItemText primary="Application" inset />
+            </ListItemButton>
+            <ListItemButton
+              button
+              component={Link}
+              to="/profile"
               sx={{ pl: 4 }}
               onClick={(e) => setSelectedPage('Profile')}
             >
               <ListItemText primary="Profile" inset />
             </ListItemButton>
-            <ListItemButton sx={{ pl: 4 }}>
+            <ListItemButton onClick={onLogout} sx={{ pl: 4 }}>
               <ListItemText primary="Log Out" inset />
             </ListItemButton>
           </List>

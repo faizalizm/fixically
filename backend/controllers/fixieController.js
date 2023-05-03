@@ -2,6 +2,41 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const Fixie = require('../models/fixieModel');
+const { query } = require('express');
+
+// @desc    Search fixie
+// @route   GET /api/fixie/search
+// @access  Public
+const searchFixie = asyncHandler(async (req, res) => {
+  const osValues =
+    req.query.os && req.query.os.length > 1 ? req.query.os.split(',') : [];
+  const filter = {
+    $and: osValues.map((os) => ({ [`os_support.${os}`]: true })),
+  };
+
+  if (req.query.state) {
+    filter.state = {
+      $regex: req.query.state,
+      $options: 'i', // case-insensitive search
+    };
+  }
+
+  if (req.query.city) {
+    filter.city = {
+      $regex: req.query.city,
+      $options: 'i', // case-insensitive search
+    };
+  }
+
+  const fixie = await Fixie.find(filter, {
+    name: 1,
+    description: 1,
+    state: 1,
+    city: 1,
+    os_support: 1,
+  });
+  res.status(200).json(fixie);
+});
 
 // @desc    Register new fixie
 // @route   POST /api/fixie/register
@@ -51,7 +86,6 @@ const registerFixie = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   // Create Fixie
-  console.log(req.body);
   const fixie = await Fixie.create({
     owner_name,
     name,
@@ -93,9 +127,18 @@ const loginFixie = asyncHandler(async (req, res) => {
   if (fixie && (await bcrypt.compare(password, fixie.password))) {
     res.json({
       _id: fixie._id,
+      usertype: 'Fixie',
+      owner_name: fixie.owner_name,
       name: fixie.name,
       mail: fixie.mail,
       phone: fixie.phone,
+      description: fixie.description,
+      ssm: fixie.ssm,
+      address: fixie.address,
+      state: fixie.state,
+      city: fixie.city,
+      application: fixie.application,
+      os_support: fixie.os_support,
       token: generateToken(fixie._id),
     });
   } else {
@@ -149,4 +192,10 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = { registerFixie, loginFixie, updateFixie, getFixie };
+module.exports = {
+  searchFixie,
+  registerFixie,
+  loginFixie,
+  updateFixie,
+  getFixie,
+};

@@ -1,5 +1,5 @@
-import { Box, createTheme } from '@mui/material';
-import { Button, Card, Chip, Divider, styled } from '@mui/material';
+import { Box, TextField, createTheme } from '@mui/material';
+import { Button, Chip, Divider, styled } from '@mui/material';
 
 export const theme = createTheme({
   breakpoints: {
@@ -18,6 +18,7 @@ export const theme = createTheme({
     },
     secondary: {
       main: '#525252',
+      textField: '#d9d9d9',
     },
     nav: {
       main: '#373F41',
@@ -30,17 +31,21 @@ export const theme = createTheme({
       background: '#F5F5F7',
       tableHeader: '#F3F6F9',
     },
+    fluctuate: {
+      increase: '#4BCE58',
+      decrease: '#C41E3A',
+    },
   },
   // spacing: (value) => value * 2,
 
   typography: {
     fontFamily: ['Mulish', 'sans-serif'].join(','),
-    h1: { fontSize: '1.50em', fontWeight: 'bold' },
-    h2: { fontSize: '1.50em', fontWeight: '600' },
-    h3: { fontSize: '1.50em', fontWeight: '700' },
-    h4: { fontSize: '1.25em', fontWeight: 'bold' },
-    h5: { fontSize: '1.00em', fontWeight: '700' },
-    h6: { fontSize: '1.00em', fontWeight: '600' },
+    h1: { fontSize: '1.50em', fontWeight: '800', color: '#1e1e1e' },
+    h2: { fontSize: '1.50em', fontWeight: '600', color: '#1e1e1e' },
+    h3: { fontSize: '1.50em', fontWeight: '700', color: '#1e1e1e' },
+    h4: { fontSize: '1.25em', fontWeight: 'bold', color: '#1e1e1e' },
+    h5: { fontSize: '1.00em', fontWeight: '700', color: '#525252' },
+    h6: { fontSize: '0.87em', fontWeight: '600', color: '#525252' },
     p: { fontFamily: ['Mulish', 'sans-serif'].join(','), fontSize: '0.9em' },
     button: {
       textTransform: 'none',
@@ -57,6 +62,7 @@ export const theme = createTheme({
 });
 
 export const CardBox = styled(Box)({
+  backgroundColor: '#FFFFFF',
   display: 'flex',
   flexDirection: 'column',
   padding: '30px 40px',
@@ -69,7 +75,7 @@ export const CardBox = styled(Box)({
 export const YellowDiv = styled(Divider)({
   width: '50px',
   fontWeight: 'bold',
-  margin: '24px 0px 48px 0px',
+  margin: '24px 0px 24px 0px',
   borderBottomWidth: '7px',
   boxShadow:
     ' -1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
@@ -80,6 +86,37 @@ export const YellowDiv = styled(Divider)({
 export const SubmitButton = styled(Button)({
   fontSize: '1.00em',
   color: theme.palette.white.main,
+});
+
+export const StyledTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      border: '2px solid #D9D9D9',
+    },
+    '&:hover fieldset': {
+      borderColor: theme.palette.secondary.main,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.secondary.main,
+    },
+  },
+});
+
+export const SmallTextField = styled(TextField)({
+  '& .MuiInputBase-input': {
+    padding: '4px 12px',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      border: '2px solid #D9D9D9',
+    },
+    '&:hover fieldset': {
+      borderColor: theme.palette.secondary.main,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.secondary.main,
+    },
+  },
 });
 
 export const StatusChip = ({ label }) => {

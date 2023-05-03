@@ -7,6 +7,10 @@ const serviceSchema = mongoose.Schema(
       required: true,
       ref: 'Fixie',
     },
+    category: {
+      type: String,
+      required: [true, 'Please add category'],
+    },
     tag: {
       type: String,
       required: [true, 'Please add tag'],
@@ -30,6 +34,10 @@ const serviceSchema = mongoose.Schema(
     price: {
       type: Number,
       required: [true, 'Please add price'],
+    },
+    labour: {
+      type: Number,
+      required: [true, 'Please add labour'],
     },
   },
   {

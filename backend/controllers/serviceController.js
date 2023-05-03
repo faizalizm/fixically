@@ -10,10 +10,23 @@ const getService = asyncHandler(async (req, res) => {
   res.status(200).json(service);
 });
 
+// @desc    Find service
+// @route   GET /api/service/:id
+// @access  Private
+const findService = asyncHandler(async (req, res) => {
+  const service = await Service.find({ fixie_id: req.fixie.id });
+  res.status(200).json(service);
+});
+
 // @desc    Set service
 // @route   POST /api/service/
 // @access  Private
 const setService = asyncHandler(async (req, res) => {
+  if (!req.body.category) {
+    res.status(400);
+    throw new Error('Please indicate category');
+  }
+
   if (!req.body.tag) {
     res.status(400);
     throw new Error('Please indicate tag');
@@ -44,14 +57,21 @@ const setService = asyncHandler(async (req, res) => {
     throw new Error('Please indicate price');
   }
 
+  if (!req.body.labour) {
+    res.status(400);
+    throw new Error('Please indicate labour');
+  }
+
   const service = await Service.create({
     fixie_id: req.fixie.id,
+    category: req.body.category,
     tag: req.body.tag,
     brand: req.body.brand,
     type: req.body.type,
     capacity: req.body.capacity,
     speed: req.body.speed,
     price: req.body.price,
+    labour: req.body.labour,
   });
 
   res.status(200).json(service);

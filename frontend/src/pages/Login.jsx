@@ -89,7 +89,7 @@ function Login() {
             alignItems="center"
           >
             <img
-              src={require('../assets/illustration/login_illustration.png')}
+              src={require('../assets/illustration/login.png')}
               alt="login illustration"
             />
           </Grid>

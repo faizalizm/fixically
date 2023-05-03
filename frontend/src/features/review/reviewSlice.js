@@ -1,21 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import quotationService from './quotationService';
+import reviewService from './reviewService';
 
 const initialState = {
-  quotation: [],
+  review: [],
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
 };
 
-// Create a quotation
-export const createQuotation = createAsyncThunk(
-  'quotation/create',
-  async (quotationData, thunkAPI) => {
+// Create a review
+export const createReview = createAsyncThunk(
+  'review/create',
+  async (reviewData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.createQuotation(quotationData, token);
+      return await reviewService.createReview(reviewData, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -28,13 +28,13 @@ export const createQuotation = createAsyncThunk(
   }
 );
 
-// Get quotation
-export const getQuotation = createAsyncThunk(
-  'quotation/getAll',
+// Get review
+export const getReview = createAsyncThunk(
+  'review/getAll',
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.getQuotation(token);
+      return await reviewService.getReview(token);
     } catch (error) {
       const message =
         (error.response &&
@@ -47,13 +47,13 @@ export const getQuotation = createAsyncThunk(
   }
 );
 
-// Delete an quotation
-export const deleteQuotation = createAsyncThunk(
-  'quotation/delete',
+// Delete an review
+export const deleteReview = createAsyncThunk(
+  'review/delete',
   async (id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.deleteQuotation(id, token);
+      return await reviewService.deleteReview(id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -66,51 +66,51 @@ export const deleteQuotation = createAsyncThunk(
   }
 );
 
-export const quotationSlice = createSlice({
-  name: 'quotation',
+export const reviewSlice = createSlice({
+  name: 'review',
   initialState,
   reducers: {
     reset: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createQuotation.pending, (state) => {
+      .addCase(createReview.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createQuotation.fulfilled, (state, action) => {
+      .addCase(createReview.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation.push(action.payload);
+        state.review.push(action.payload);
       })
-      .addCase(createQuotation.rejected, (state, action) => {
+      .addCase(createReview.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getQuotation.pending, (state) => {
+      .addCase(getReview.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getQuotation.fulfilled, (state, action) => {
+      .addCase(getReview.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation = action.payload;
+        state.review = action.payload;
       })
-      .addCase(getQuotation.rejected, (state, action) => {
+      .addCase(getReview.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deleteQuotation.pending, (state) => {
+      .addCase(deleteReview.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteQuotation.fulfilled, (state, action) => {
+      .addCase(deleteReview.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.quotation = state.quotation.filter(
-          (quotation) => quotation._id !== action.payload.id
+        state.review = state.review.filter(
+          (review) => review._id !== action.payload.id
         );
       })
-      .addCase(deleteQuotation.rejected, (state, action) => {
+      .addCase(deleteReview.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -118,5 +118,5 @@ export const quotationSlice = createSlice({
   },
 });
 
-export const { reset } = quotationSlice.actions;
-export default quotationSlice.reducer;
+export const { reset } = reviewSlice.actions;
+export default reviewSlice.reducer;
