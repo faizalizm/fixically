@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { logout, reset } from '../features/auth/authSlice';
 
@@ -16,7 +17,6 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -25,79 +25,137 @@ export const Sidebar = () => {
   const [selectedPage, setSelectedPage] = useState('Dashboard');
   const [openManage, setopenManage] = useState(true);
   const [openAccount, setopenAccount] = useState(true);
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!user) navigate('/login');
+  }, [user, dispatch]);
 
   const onLogout = () => {
     dispatch(logout());
     dispatch(reset());
+    toast.success('You have logged out', { autoClose: 3000 });
     navigate('/');
   };
 
   return (
     <>
       <List component="nav">
-        {/* Dashboard */}
-        <ListItemButton
-          button
-          component={Link}
-          to="/dashboard"
-          selected={selectedPage === 'Dashboard'}
-          onClick={(e) => setSelectedPage('Dashboard')}
-        >
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
+        {user.role === 'Fixie' && user.application.status != 'APPROVED' ? (
+          ''
+        ) : (
+          <>
+            {/* Dashboard */}
+            {user.role !== 'Member' ? (
+              <>
+                <ListItemButton
+                  selected={selectedPage === 'Dashboard'}
+                  onClick={(e) => {
+                    setSelectedPage('Dashboard');
+                    navigate('/dashboard');
+                  }}
+                >
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" />
+                </ListItemButton>
+              </>
+            ) : (
+              ''
+            )}
 
-        {/* Manage */}
-        <ListItemButton onClick={(e) => setopenManage(!openManage)}>
-          <ListItemIcon>
-            <InboxIcon />
-          </ListItemIcon>
-          <ListItemText primary="Manage" />
-          {openManage ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
+            {/* Manage */}
+            <ListItemButton onClick={(e) => setopenManage(!openManage)}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Manage" />
+              {openManage ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
 
-        <Collapse in={openManage} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton
-              button
-              component={Link}
-              to="/orders"
-              sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Orders')}
-            >
-              <ListItemText primary="Orders" inset />
-            </ListItemButton>
-            <ListItemButton
-              button
-              component={Link}
-              to="/reviews"
-              sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Reviews')}
-            >
-              <ListItemText primary="Reviews" inset />
-            </ListItemButton>
-            <ListItemButton
-              button
-              component={Link}
-              to="/quotations"
-              sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Quote Request')}
-            >
-              <ListItemText primary="Quote Request" inset />
-            </ListItemButton>
-            <ListItemButton
-              button
-              component={Link}
-              to="/services"
-              sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Services')}
-            >
-              <ListItemText primary="Services" inset />
-            </ListItemButton>
-          </List>
-        </Collapse>
+            <Collapse in={openManage} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {user.role == 'Admin' ? (
+                  <>
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      selected={selectedPage === 'Fixies'}
+                      onClick={(e) => {
+                        setSelectedPage('Fixies');
+                        navigate('/fixies');
+                      }}
+                    >
+                      <ListItemText primary="Fixie" inset />
+                    </ListItemButton>
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      selected={selectedPage === 'Members'}
+                      onClick={(e) => {
+                        setSelectedPage('Members');
+                        navigate('/members');
+                      }}
+                    >
+                      <ListItemText primary="Members" inset />
+                    </ListItemButton>
+                  </>
+                ) : (
+                  ''
+                )}
+                {user.role !== 'Admin' ? (
+                  <>
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      selected={selectedPage === 'Orders'}
+                      onClick={(e) => {
+                        setSelectedPage('Orders');
+                        navigate('/orders');
+                      }}
+                    >
+                      <ListItemText primary="Orders" inset />
+                    </ListItemButton>
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      selected={selectedPage === 'Reviews'}
+                      onClick={(e) => {
+                        setSelectedPage('Reviews');
+                        navigate('/reviews');
+                      }}
+                    >
+                      <ListItemText primary="Reviews" inset />
+                    </ListItemButton>
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      onClick={(e) => {
+                        setSelectedPage('Quote Request');
+                        navigate('/quotations');
+                      }}
+                    >
+                      <ListItemText primary="Quote Request" inset />
+                    </ListItemButton>
+                    {user.role === 'Fixie' ? (
+                      <>
+                        <ListItemButton
+                          sx={{ pl: 4 }}
+                          onClick={(e) => {
+                            setSelectedPage('Services');
+                            navigate('/services');
+                          }}
+                        >
+                          <ListItemText primary="Services" inset />
+                        </ListItemButton>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </>
+                ) : (
+                  ''
+                )}
+              </List>
+            </Collapse>
+          </>
+        )}
 
         {/* Account */}
         <ListItemButton onClick={(e) => setopenAccount(!openAccount)}>
@@ -110,21 +168,27 @@ export const Sidebar = () => {
 
         <Collapse in={openAccount} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
+            {user.role === 'Fixie' ? (
+              <>
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  onClick={(e) => {
+                    setSelectedPage('Application');
+                    navigate('/application');
+                  }}
+                >
+                  <ListItemText primary="Application" inset />
+                </ListItemButton>
+              </>
+            ) : (
+              ''
+            )}
             <ListItemButton
-              button
-              component={Link}
-              to="/application"
               sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Application')}
-            >
-              <ListItemText primary="Application" inset />
-            </ListItemButton>
-            <ListItemButton
-              button
-              component={Link}
-              to="/profile"
-              sx={{ pl: 4 }}
-              onClick={(e) => setSelectedPage('Profile')}
+              onClick={(e) => {
+                setSelectedPage('Profile');
+                navigate('/profile');
+              }}
             >
               <ListItemText primary="Profile" inset />
             </ListItemButton>

@@ -1,15 +1,36 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { updateFixie, reset } from '../../features/fixie/fixieSlice';
+import {
+  updateProfile,
+  getProfile,
+  reset,
+} from '../../features/auth/authSlice';
 
 import { UserNavbar } from '../../components/UserNavbar';
 import { Sidebar } from '../../components/Sidebar';
 
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { CardBox, SmallTextField, SubmitButton, YellowDiv } from '../../theme';
-import { Stack, TextField, Typography, useTheme, styled } from '@mui/material';
+import {
+  CardBox,
+  IconStack,
+  SmallTextField,
+  SubmitButton,
+  YellowDiv,
+} from '../../theme';
+import {
+  Stack,
+  Typography,
+  useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from '@mui/material';
 import RightIcon from '@mui/icons-material/ChevronRightOutlined';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
@@ -18,19 +39,22 @@ function Profile() {
   const dispatch = useDispatch();
   const theme = useTheme();
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
+  const { user, isLoading, isError, message } = useSelector(
     (state) => state.auth
   );
 
   const [updating, setUpdating] = useState(false);
-
+  const [confirmation, setConfirmation] = useState({
+    profile: false,
+    password: false,
+  });
   const [formData, setFormData] = useState({
     name: user.name,
     phone: user.phone,
     mail: user.mail,
-    password: user.password,
-    password2: user.password2,
-    owner_name: user.owner_name,
+    password: '',
+    password2: '',
+    owner: user.owner,
     description: user.description,
     ssm: user.ssm,
     address: user.address,
@@ -44,7 +68,7 @@ function Profile() {
     mail,
     password,
     password2,
-    owner_name,
+    owner,
     description,
     ssm,
     address,
@@ -53,12 +77,20 @@ function Profile() {
   } = formData;
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
+    if (isError) {
+      console.log(message);
     }
 
-    dispatch(reset());
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
+    if (!user) {
+      navigate('/login');
+    } else {
+      dispatch(getProfile());
+    }
+
+    return () => {
+      dispatch(reset());
+    };
+  }, [navigate, isError, message, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -67,117 +99,153 @@ function Profile() {
     }));
   };
 
-  const onSubmit = (e) => {
+  const saveProfile = (e) => {
+    e.preventDefault();
+
+    let updateData;
+
+    if (user.role === 'Fixie') {
+      updateData = {
+        name,
+        phone,
+        mail,
+        description,
+        address,
+        state,
+        city,
+      };
+    } else {
+      updateData = {
+        name,
+        mail,
+        phone,
+      };
+    }
+
+    if (user.role === 'Fixie') updateData.role = 'Fixie';
+    else if (user.role === 'Member') updateData.role = 'Member';
+    else if (user.role === 'Admin') updateData.role = 'Admin';
+
+    dispatch(updateProfile(updateData));
+    toast.success('Profile successfully updated');
+  };
+
+  const savePassword = (e) => {
     e.preventDefault();
 
     if (password !== password2) {
       toast.error('Passwords do not match');
+    } else if (
+      password.length < 6 ||
+      password.length > 20 ||
+      !/[a-zA-Z]/.test(password) ||
+      !/\d/.test(password)
+    ) {
+      toast.error(
+        <div>
+          Password must be at least :<br /> • 6 to 20 characters
+          <br /> • One alphabet character
+          <br /> • One number
+        </div>
+      );
     } else {
-      let updateData;
+      let updateData = { password: password };
 
-      // registerType == 'fixie'
-      //   ? (updateData = {
-      //       name,
-      //       phone,
-      //       mail,
-      //       password,
-      //       password2,
-      //       owner_name,
-      //       description,
-      //       ssm,
-      //       address,
-      //       state,
-      //       city,
-      //       userType: 'fixie',
-      //     })
-      //   : (updateData = {
-      //       name,
-      //       mail,
-      //       password,
-      //       phone,
-      //       userType: 'member',
-      //     });
+      dispatch(updateProfile(updateData));
 
-      // dispatch(updateFixie(updateData));
+      setFormData({
+        ...formData,
+        password: '',
+        password2: '',
+      });
+
+      toast.success('Password successfully updated');
     }
   };
 
   // Custom Styling
-  const StyledGrid = styled(Grid)({
+  const gridStyle = {
     display: 'flex',
-    minHeight: '64px',
+    minHeight: '48px',
     alignItems: 'center',
-  });
+  };
 
   return (
     <>
       <UserNavbar />
-      <Grid container spacing={0}>
-        <Grid item xs={2} height="100%">
+      <Grid container>
+        <Grid item xs={2}>
           <Sidebar />
         </Grid>
-        <Grid item xs={10} px={4}>
+        <Grid item xs={6} px={4}>
           <Typography
-            variant="h3"
+            variant="h1"
             color={theme.palette.black.main}
             sx={{ mt: 4 }}
           >
             Profile
           </Typography>
           <YellowDiv />
-          <form onSubmit={onSubmit}>
-            <Grid container rowSpacing={4}>
-              <Grid item xs={12}>
-                <CardBox sx={{ gap: '8px' }}>
-                  <Typography variant="h4">Fixie Details</Typography>
-                  <Stack direction="row" alignItems="center" mb={2}>
-                    <InfoIcon
-                      sx={{
-                        fontSize: 16,
-                        mr: 1,
-                        color: theme.palette.secondary.main,
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      color={theme.palette.secondary.main}
-                    >
-                      This will be visible to your customer
-                    </Typography>
-                  </Stack>
-                  <Grid container>
-                    <StyledGrid item xs={4}>
+          <CardBox sx={{ gap: '0px' }}>
+            <Typography variant="h2">
+              {user.role === 'Admin'
+                ? 'Admin Details'
+                : user.role === 'Fixie'
+                ? 'Fixie Details'
+                : 'Member Details'}
+            </Typography>
+            <IconStack>
+              <InfoIcon
+                sx={{
+                  fontSize: 16,
+                  mr: 1,
+                  color: theme.palette.secondary.main,
+                }}
+              />
+              <Typography variant="h6" color={theme.palette.secondary.main}>
+                {user.role === 'Fixie'
+                  ? 'This will be visible to your customer'
+                  : 'This will be used to identify you'}
+              </Typography>
+            </IconStack>
+            <form onSubmit={(e) => saveProfile(e)}>
+              <Grid container mt={2}>
+                {user.role === 'Fixie' ? (
+                  <>
+                    <Grid sx={gridStyle} item xs={4}>
+                      <Typography variant="h5">Owner Name</Typography>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
+                      <Typography
+                        variant="h5"
+                        color={theme.palette.secondary.main}
+                      >
+                        {owner}
+                      </Typography>
+                    </Grid>
+                  </>
+                ) : (
+                  <></>
+                )}
+                {user.role == 'Fixie' ? (
+                  <>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">
                         SSM Registration Number
                       </Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
-                      {!updating ? (
-                        <>
-                          <Typography
-                            variant="h5"
-                            color={theme.palette.secondary.main}
-                          >
-                            {ssm}
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <SmallTextField
-                            type="text"
-                            name="ssm"
-                            value={ssm}
-                            onChange={onChange}
-                            size="small"
-                            fullWidth
-                          />
-                        </>
-                      )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
+                      <Typography
+                        variant="h5"
+                        color={theme.palette.secondary.main}
+                      >
+                        {ssm}
+                      </Typography>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Fixie Name</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -199,11 +267,11 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Fixie Description</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -225,11 +293,37 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
+                      <Typography variant="h5">Fixie Number</Typography>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
+                      {!updating ? (
+                        <>
+                          <Typography
+                            variant="h5"
+                            color={theme.palette.secondary.main}
+                          >
+                            {phone}
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <SmallTextField
+                            type="text"
+                            name="phone"
+                            value={phone}
+                            onChange={onChange}
+                            size="small"
+                            fullWidth
+                          />
+                        </>
+                      )}
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Fixie Address</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -251,11 +345,11 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Fixie State</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -277,11 +371,11 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Fixie City</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -303,58 +397,14 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                  </Grid>
-                  {/* <StyledDivider /> */}
-                  <Typography variant="h4" mt={4}>
-                    Account Details
-                  </Typography>
-                  <Stack direction="row" alignItems="center" mb={2}>
-                    <InfoIcon
-                      sx={{
-                        fontSize: 16,
-                        mr: 1,
-                        color: theme.palette.secondary.main,
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      color={theme.palette.secondary.main}
-                    >
-                      This will be used as your login information
-                    </Typography>
-                  </Stack>
-                  <StyledGrid container>
-                    <StyledGrid item xs={4}>
-                      <Typography variant="h5">Name</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
-                      {!updating ? (
-                        <>
-                          <Typography
-                            variant="h5"
-                            color={theme.palette.secondary.main}
-                          >
-                            {name}
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <SmallTextField
-                            type="text"
-                            name="owner_name"
-                            value={owner_name}
-                            onChange={onChange}
-                            size="small"
-                            fullWidth
-                          />
-                        </>
-                      )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
+                    </Grid>
+                  </>
+                ) : (
+                  <>
+                    <Grid sx={gridStyle} item xs={4}>
                       <Typography variant="h5">Email</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
@@ -376,49 +426,204 @@ function Profile() {
                           />
                         </>
                       )}
-                    </StyledGrid>
-                    <StyledGrid item xs={4}>
-                      <Typography variant="h5">Password</Typography>
-                    </StyledGrid>
-                    <StyledGrid item xs={8}>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
+                      <Typography variant="h5">Name</Typography>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
                       {!updating ? (
                         <>
                           <Typography
                             variant="h5"
                             color={theme.palette.secondary.main}
                           >
-                            Change Password
+                            {name}
                           </Typography>
                         </>
                       ) : (
                         <>
                           <SmallTextField
                             type="text"
-                            name="password"
-                            value={password}
+                            name="name"
+                            value={name}
                             onChange={onChange}
                             size="small"
                             fullWidth
                           />
                         </>
                       )}
-                    </StyledGrid>
-                  </StyledGrid>
-                  <Stack direction="row" justifyContent="end">
-                    <SubmitButton
-                      variant="contained"
-                      type="submit"
-                      sx={{ mt: 4, paddingX: '64px' }}
-                      endIcon={<RightIcon />}
-                      onClick={() => setUpdating(!updating)}
-                    >
-                      Update
-                    </SubmitButton>
-                  </Stack>
-                </CardBox>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={4}>
+                      <Typography variant="h5">Phone Number</Typography>
+                    </Grid>
+                    <Grid sx={gridStyle} item xs={8}>
+                      {!updating ? (
+                        <>
+                          <Typography
+                            variant="h5"
+                            color={theme.palette.secondary.main}
+                          >
+                            {phone}
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <SmallTextField
+                            type="text"
+                            name="phone"
+                            value={phone}
+                            onChange={onChange}
+                            size="small"
+                            fullWidth
+                          />
+                        </>
+                      )}
+                    </Grid>
+                  </>
+                )}
               </Grid>
-            </Grid>
-          </form>
+              <Stack direction="row" justifyContent="end">
+                <SubmitButton
+                  variant="contained"
+                  // type="submit"
+                  sx={{ mt: 4, paddingX: '32px' }}
+                  endIcon={<RightIcon />}
+                  onClick={() => {
+                    if (!updating) {
+                      setUpdating(true);
+                    } else {
+                      setConfirmation((prevState) => ({
+                        ...prevState,
+                        profile: true,
+                      }));
+                    }
+                  }}
+                >
+                  {!updating ? 'Update' : 'Save Changes'}
+                </SubmitButton>
+                <Dialog
+                  open={confirmation.profile}
+                  onClose={() =>
+                    setConfirmation((prevState) => ({
+                      ...prevState,
+                      profile: false,
+                    }))
+                  }
+                >
+                  <DialogTitle>Confirm</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-slide-description">
+                      Are you sure to update your account details ?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={() =>
+                        setConfirmation((prevState) => ({
+                          ...prevState,
+                          profile: false,
+                        }))
+                      }
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        saveProfile(e);
+                        setConfirmation((prevState) => ({
+                          ...prevState,
+                          profile: false,
+                        }));
+                        setUpdating(false);
+                      }}
+                    >
+                      Confirm
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </Stack>
+            </form>
+            <Typography variant="h2" mt={4}>
+              Password Details
+            </Typography>
+            <IconStack>
+              <InfoIcon
+                sx={{
+                  fontSize: 16,
+                  mr: 1,
+                  color: theme.palette.secondary.main,
+                }}
+              />
+              <Typography variant="h6" color={theme.palette.secondary.main}>
+                This will be used with your email as login information
+              </Typography>
+            </IconStack>
+
+            <form onSubmit={(e) => savePassword(e)}>
+              <Grid
+                sx={{
+                  display: 'flex',
+                  minHeight: '48px',
+                  alignItems: 'center',
+                }}
+                container
+                mt={2}
+              >
+                <Grid sx={gridStyle} item xs={4}>
+                  <Typography variant="h5">New Password</Typography>
+                </Grid>
+                <Grid sx={gridStyle} item xs={8}>
+                  <SmallTextField
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={onChange}
+                    size="small"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid
+                  sx={{
+                    display: 'flex',
+                    minHeight: '48px',
+                    alignItems: 'center',
+                  }}
+                  item
+                  xs={4}
+                >
+                  <Typography variant="h5">Confirm Password</Typography>
+                </Grid>
+                <Grid
+                  sx={{
+                    display: 'flex',
+                    minHeight: '48px',
+                    alignItems: 'center',
+                  }}
+                  item
+                  xs={8}
+                >
+                  <SmallTextField
+                    type="password"
+                    name="password2"
+                    value={password2}
+                    onChange={onChange}
+                    size="small"
+                    fullWidth
+                  />
+                </Grid>
+              </Grid>
+              <Stack direction="row" justifyContent="end">
+                <SubmitButton
+                  variant="contained"
+                  type="submit"
+                  sx={{ mt: 4, paddingX: '32px' }}
+                  endIcon={<RightIcon />}
+                >
+                  Save Changes
+                </SubmitButton>
+              </Stack>
+            </form>
+          </CardBox>
         </Grid>
       </Grid>
     </>

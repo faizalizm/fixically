@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fixically Mail</title>
+    <style type="text/css">
+      body {
+        margin: 0;
+        background-color: #f5f5f7;
+      }
+      table {
+        border-spacing: 0;
+      }
+      td {
+        padding: 0;
+      }
+      img {
+        border: 0;
+      }
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #ffffff;
+        padding-bottom: 60px;
+      }
+      .main {
+        background-color: #f5f5f7;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 600px;
+        border-spacing: 0;
+        font-family: 'Mulish', sans-serif;
+        color: #1e1e1e;
+      }
+      .two-columns {
+        text-align: center;
+        font-size: 0;
+        display: fle;
+      }
+      .two-columns .column {
+        width: 100%;
+        max-width: 300px;
+        display: inline-block;
+        vertical-align: top;
+        text-align: center;
+      }
+      .three-columns {
+        text-align: center;
+        font-size: 0;
+        padding: 15px 0 20px;
+      }
+      .three-columns .column {
+        width: 100%;
+        max-width: 200px;
+        display: inline-block;
+        vertical-align: top;
+        text-align: center;
+      }
+      .three-columns .padding {
+        padding: 15px;
+      }
+      .three-columns .content {
+        font-size: 15px;
+        line-height: 20px;
+        padding: 0 5px;
+      }
+      .two-columns.last {
+        padding: 15px 0;
+      }
+      .two-columns .padding {
+        padding: 20px;
+      }
+      .two-columns .content {
+        font-size: 15px;
+        line-height: 20px;
+        text-align: left;
+      }
+      .button {
+        font-weight: bold;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+      }
+      .button-dark {
+        font-weight: bold;
+        background-color: #eab308;
+        color: #1e1e1e;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <center class="wrapper">
+      <table class="main" width="100%">
+        <!-- TOP BORDER -->
+        <tr>
+          <td height="8" style="background-color: #1e1e1e"></td>
+        </tr>
+
+        <!-- LOGO SECTION -->
+        <tr>
+          <td style="padding: 14px 0 4px; background-color: #eab308">
+            <table width="100%">
+              <tr>
+                <td class="two-columns">
+                  <table class="column">
+                    <tr>
+                      <td style="padding: 0 62px 10px">
+                        <a href="https://fixically.herokuapp.com/"
+                          ><img
+                            src="https://ik.imagekit.io/fixically/logoHorizontal.png?updatedAt=1683418219461"
+                            alt="Fixically Logo"
+                            width="180"
+                            title="Fixically Logo"
+                        /></a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ORDER -->
+        <tr>
+          <td style="padding: 30px 0 0">
+            <table width="100%">
+              <tr>
+                <td style="padding: 32px 32px 0px">
+                  <table width="100%">
+                    <tr>
+                      <td
+                        style="
+                          padding: 30px 40px;
+                          background-color: #ffffff;
+                          box-shadow: -1.23856px -1.23856px 16.1013px #fafbff,
+                            2.47712px 2.47712px 18.5784px
+                              rgba(166, 171, 189, 0.5);
+                          border-radius: 20px;
+                        "
+                      >
+                        <p style="font-size: 20px; font-weight: bold">
+                          Order Confirmation
+                        </p>
+                        <p
+                          style="
+                            text-align: justify;
+                            line-height: 23px;
+                            font-size: 15px;
+                            padding: 5px 0 15px;
+                          "
+                        >
+                          Hi [Customer Name], <br /><br />Thank you for shopping
+                          with us! We've received your order and our Fixie is
+                          waiting for you to drop off your laptop.
+                        </p>
+
+                        <!-- ITEM START LOOP -->
+                        <hr />
+                        <p
+                          style="
+                            font-weight: bold;
+                            font-size: 18px;
+                            margin-bottom: 0;
+                          "
+                        >
+                          Patriot Signature Line x 1
+                        </p>
+                        <p
+                          style="
+                            line-height: 23px;
+                            font-size: 15px;
+                            padding: 5px 0;
+                          "
+                        >
+                          32GB | DDR4 | 2666 MHz
+                        </p>
+                        <p style="font-size: 16px; font-weight: bold">RM 175</p>
+                        <!-- ITEM END LOOP -->
+                        <hr />
+
+                        <p
+                          style="
+                            line-height: 23px;
+                            font-size: 15px;
+                            margin-bottom: 0;
+                            padding-top: 15px;
+                          "
+                        >
+                          We hope you enjoy your shopping experience with us.
+                          <br /><br />Fixically, MY.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 30px 0 50px">
+            <table width="100%">
+              <tr>
+                <td style="padding: 32px">
+                  <table width="100%">
+                    <tr>
+                      <td
+                        style="
+                          padding: 30px 40px;
+                          background-color: #ffffff;
+                          box-shadow: -1.23856px -1.23856px 16.1013px #fafbff,
+                            2.47712px 2.47712px 18.5784px
+                              rgba(166, 171, 189, 0.5);
+                          border-radius: 20px;
+                          padding-bottom: 48px;
+                        "
+                      >
+                        <p style="font-size: 20px; font-weight: bold">
+                          Fixie Information
+                        </p>
+                        <p style="font-weight: bold">RexTech PC Sdn. Bhd.</p>
+                        <p
+                          style="
+                            line-height: 23px;
+                            font-size: 15px;
+                            padding-bottom: 16px;
+                          "
+                        >
+                          0123456789 <br />
+                          11-1, Jalan Du 2/1, Taman Damai Utama, 47180
+                        </p>
+                        <a href="#" class="button">View Location</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- TWO COLUMN SECTION -->
+        <!-- <tr>
+          <td style="background-color: #eab308; color: #1e1e1e">
+            <table width="100%">
+              <tr>
+                <td class="two-columns last">
+                  <table class="column">
+                    <tr>
+                      <td class="padding">
+                        <table class="content">
+                          <tr>
+                            <td
+                              style="
+                                background-color: #ffffff;
+                                border-radius: 10px;
+                              "
+                            >
+                              <a href="#"
+                                ><img
+                                  src="https://ik.imagekit.io/fixically/favicon128.png?updatedAt=1683420650564"
+                                  alt=""
+                                  width="128px"
+                                  style="max-width: 128px"
+                              /></a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <table class="column">
+                    <tr>
+                      <td class="padding">
+                        <table class="content">
+                          <tr>
+                            <td>
+                              <p style="font-weight: bold; font-size: 18px">
+                                Fixie Information
+                              </p>
+                              <p>RexTech PC Sdn. Bhd.</p>
+                              <p>0123456789</p>
+                              <p style="padding-bottom: 16px">
+                                11-1, Jalan Du 2/1, Taman Damai Utama, 47180
+                              </p>
+                              <a href="#" class="button">View Location</a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr> -->
+
+        <!-- CTA SECTION -->
+        <!-- <tr>
+          <td style="padding: 30px 0 50px">
+            <table width="100%">
+              <tr>
+                <td style="text-align: center; padding: 15px">
+                  <p style="font-size: 20px; font-weight: bold">
+                    You might want to have a look at this
+                  </p>
+                  <p
+                    style="
+                      line-height: 23px;
+                      font-size: 15px;
+                      padding: 5px 0 15px;
+                    "
+                  >
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Incidunt magnam nulla earum! Quae reiciendis mollitia soluta
+                    amet eveniet voluptate consequuntur pariatur, omnis quia
+                    facere deserunt quas suscipit dolorum, nostrum possimus?
+                  </p>
+                  <a href="#" class="button-dark">View</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr> -->
+
+        <!-- FOOTER SECTION -->
+        <tr>
+          <td style="background-color: #eab308">
+            <table width="100%">
+              <tr>
+                <td
+                  style="text-align: center; padding: 45px 20px; color: #1e1e1e"
+                >
+                  <a href="#"></a>
+                  <p>
+                    This is a system generated e-mail, please do not reply to
+                    this e-mail.
+                  </p>
+                  <div id="copyrightYear"></div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- BOTTOM BORDER -->
+        <tr>
+          <td height="8" style="background-color: #1e1e1e"></td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>
+
+<script>
+  document.getElementById('copyrightYear').innerHTML = `
+    <p>© ${new Date().getFullYear()} Fixically, MY. All Rights Reserved.</p>
+  `;
+</script>
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous"
+></script>

@@ -3,10 +3,11 @@ import axios from 'axios';
 const API_URL = '/api/quotation/';
 
 // Create an quotation
-const createQuotation = async (quotationData, token) => {
+const createQuotation = async (quotationData, token, role) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      Role: role,
     },
   };
 
@@ -16,14 +17,48 @@ const createQuotation = async (quotationData, token) => {
 };
 
 // Get quotation
-const getQuotation = async (token) => {
+const getQuotation = async (token, role) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      Role: role,
     },
   };
 
   const response = await axios.get(API_URL, config);
+
+  return response.data;
+};
+
+// Find quotation
+const findQuotation = async (id, token, role) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Role: role,
+    },
+  };
+
+  const response = await axios.get(API_URL + 'search?id=' + id, config);
+
+  return response.data;
+};
+
+// Update quotation status
+const updateQuotation = async (updateData, token, role) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Role: role,
+    },
+  };
+  console.log(API_URL + updateData._id);
+
+  const response = await axios.put(
+    API_URL + updateData._id,
+    updateData,
+    config
+  );
 
   return response.data;
 };
@@ -44,6 +79,8 @@ const deleteQuotation = async (id, token) => {
 const quotationService = {
   createQuotation,
   getQuotation,
+  findQuotation,
+  updateQuotation,
   deleteQuotation,
 };
 

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { logout, reset } from '../features/auth/authSlice';
-
+import logoHorizontal from '../assets/brand/logoHorizontal.png';
 import ArrowDropDownOutlined from '@mui/icons-material/ArrowDropDownOutlined';
 import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   AppBar,
   Avatar,
@@ -23,52 +24,53 @@ const StyledToolbar = styled(Toolbar)({
   justifyContent: 'space-between',
 });
 
-const Search = styled('div')(({ theme }) => ({
+const Search = styled(Box)(({ theme }) => ({
   backgroundColor: 'white',
   padding: '0 10px',
   borderRadius: theme.shape.borderRadius,
-}));
-
-const NavUtil = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '20px',
-}));
-const UserBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
 }));
 
+const NavUtil = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '20px',
+});
+
+const UserBox = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+});
+
 export const UserNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { user } = useSelector((state) => state.auth);
-
   const [open, setOpen] = useState(false);
 
   const onLogout = () => {
     dispatch(logout());
     dispatch(reset());
+    toast.success('You have logged out', { autoClose: 3000 });
     navigate('/');
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" key="navbar">
       <StyledToolbar>
-        <Box
-          component="img"
-          sx={{
-            width: 150,
-          }}
-          alt="Example Alt"
-          src={require('../assets/brand/fixically-stretch.webp')}
-        />
+        <Link to="/">
+          <Box display="flex" alignItems="center">
+            <img alt="Fixically Logo" src={logoHorizontal} width="150px" />
+          </Box>
+        </Link>
         <NavUtil>
-          <Search>
+          {/* <Search>
+            <SearchIcon />
             <InputBase placeholder="Search..."></InputBase>
-          </Search>
+          </Search> */}
           <UserBox id="hehe" onClick={(e) => setOpen(true)}>
             <AccountCircleOutlined />
             <Typography variant="h6">{user && user.name}</Typography>
@@ -92,11 +94,15 @@ export const UserNavbar = () => {
         open={open}
         onClose={(e) => setOpen(false)}
       >
-        <MenuItem>
-          <Typography textAlign="center">Profile</Typography>
+        <MenuItem onClick={() => navigate('/profile')}>
+          <Typography variant="h4" textAlign="center">
+            Profile
+          </Typography>
         </MenuItem>
         <MenuItem onClick={onLogout}>
-          <Typography textAlign="center">Logout</Typography>
+          <Typography variant="h4" textAlign="center">
+            Logout
+          </Typography>
         </MenuItem>
       </Menu>
     </AppBar>

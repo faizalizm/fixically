@@ -25,14 +25,14 @@ function Footer() {
         <Grid container px={20} py={6}>
           <Grid item xs={8}>
             <Typography variant="h1">Fixically</Typography>
-            <Typography variant="h5">Solution for your laptop needs</Typography>
+            <Typography variant="h6">Solution for your laptop needs</Typography>
             <Stack mt={4} direction="row" spacing={4}>
               <Box>
-                <Typography variant="h4">Member</Typography>
+                <Typography variant="h2">Member</Typography>
                 <Typography variant="p">Become a member</Typography>
               </Box>
               <Box>
-                <Typography variant="h4">Fixie</Typography>
+                <Typography variant="h2">Fixie</Typography>
                 <Typography variant="p">Become a Fixie</Typography>
               </Box>
             </Stack>
@@ -40,11 +40,11 @@ function Footer() {
           <Grid item xs={4}>
             <Stack spacing={4}>
               <Box>
-                <Typography variant="h4">Support Service</Typography>
+                <Typography variant="h2">Support Service</Typography>
                 <Typography variant="p">admin@fixically.com</Typography>
               </Box>
               <Box>
-                <Typography variant="h4">Contact Hotline</Typography>
+                <Typography variant="h2">Contact Hotline</Typography>
                 <Typography variant="p">+60 16 589 5625</Typography>
               </Box>
             </Stack>

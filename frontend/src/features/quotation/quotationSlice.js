@@ -15,7 +15,8 @@ export const createQuotation = createAsyncThunk(
   async (quotationData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.createQuotation(quotationData, token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await quotationService.createQuotation(quotationData, token, role);
     } catch (error) {
       const message =
         (error.response &&
@@ -34,7 +35,48 @@ export const getQuotation = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await quotationService.getQuotation(token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await quotationService.getQuotation(token, role);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Find quotation
+export const findQuotation = createAsyncThunk(
+  'quotation/find',
+  async (id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const role = thunkAPI.getState().auth.user.role;
+      return await quotationService.findQuotation(id, token, role);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Update quotation
+export const updateQuotation = createAsyncThunk(
+  'quotation/updateQuotation',
+  async (updateData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const role = thunkAPI.getState().auth.user.role;
+      return await quotationService.updateQuotation(updateData, token, role);
     } catch (error) {
       const message =
         (error.response &&
@@ -96,6 +138,32 @@ export const quotationSlice = createSlice({
         state.quotation = action.payload;
       })
       .addCase(getQuotation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(findQuotation.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(findQuotation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.quotation = action.payload;
+      })
+      .addCase(findQuotation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(updateQuotation.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateQuotation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // state.quotation = action.payload;
+      })
+      .addCase(updateQuotation.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

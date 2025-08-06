@@ -6,13 +6,17 @@ const {
   registerFixie,
   loginFixie,
   updateFixie,
-  getFixie,
+  profileFixie,
+  dashboardFixie,
+  allFixie,
 } = require('../controllers/fixieController');
 
+router.get('/profile', protect, profileFixie);
+router.get('/dashboard', protect, dashboardFixie);
+router.get('/all', protect, allFixie);
 router.get('/search', searchFixie);
 router.post('/register', registerFixie);
 router.post('/login', loginFixie);
 router.put('/update', protect, updateFixie);
-router.get('/me', protect, getFixie);
 
 module.exports = router;

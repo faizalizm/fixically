@@ -62,21 +62,21 @@ function AdminLogin() {
     const userData = {
       mail,
       password,
-      userType: 3,
+      userType: 'Admin',
     };
 
     dispatch(login(userData));
   };
 
   // Custom Styling
-  const StyledCard = styled(Card)({
+  const cardStyle = {
     display: 'flex',
     marginTop: '30px',
     padding: '20px 30px',
     boxShadow:
       '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
     borderRadius: '20px',
-  });
+  };
 
   return (
     <>
@@ -95,7 +95,7 @@ function AdminLogin() {
               <Typography variant="h3" textAlign="center">
                 Administrator Login
               </Typography>
-              <StyledCard>
+              <Card sx={cardStyle}>
                 <CardContent
                   sx={{
                     width: '100%',
@@ -148,7 +148,7 @@ function AdminLogin() {
                     Login
                   </SubmitButton>
                 </CardContent>
-              </StyledCard>
+              </Card>
             </Box>
           </form>
         </Grid>

@@ -9,11 +9,14 @@ const initialState = {
   message: '',
 };
 
-export const searchFixie = createAsyncThunk(
-  'fixie/searchFixie',
-  async (searchData, thunkAPI) => {
+// Get all fixie
+export const allFixie = createAsyncThunk(
+  'fixie/all',
+  async (status, thunkAPI) => {
     try {
-      return await fixieService.searchFixie(searchData);
+      const token = thunkAPI.getState().auth.user.token;
+      const role = thunkAPI.getState().auth.user.role;
+      return await fixieService.allFixie(status, token, role);
     } catch (error) {
       const message =
         (error.response &&
@@ -26,12 +29,32 @@ export const searchFixie = createAsyncThunk(
   }
 );
 
-export const updateFixie = createAsyncThunk(
-  'fixie/updateFixie',
-  async (updateData, thunkAPI) => {
+// Get a fixie
+export const profileFixie = createAsyncThunk(
+  'fixie/profile',
+  async (fixie_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await fixieService.updateFixie(updateData, token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await fixieService.profileFixie(fixie_id, token, role);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Search fixies
+export const searchFixie = createAsyncThunk(
+  'fixie/search',
+  async (searchData, thunkAPI) => {
+    try {
+      return await fixieService.searchFixie(searchData);
     } catch (error) {
       const message =
         (error.response &&
@@ -52,6 +75,32 @@ export const fixieSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(allFixie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(allFixie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.fixie = action.payload;
+      })
+      .addCase(allFixie.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(profileFixie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(profileFixie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.fixie = action.payload;
+      })
+      .addCase(profileFixie.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
       .addCase(searchFixie.pending, (state) => {
         state.isLoading = true;
       })
@@ -61,19 +110,6 @@ export const fixieSlice = createSlice({
         state.fixie = action.payload;
       })
       .addCase(searchFixie.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(updateFixie.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(updateFixie.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.fixie = action.payload;
-      })
-      .addCase(updateFixie.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

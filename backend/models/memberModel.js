@@ -6,6 +6,10 @@ const memberSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add your name'],
     },
+    phone: {
+      type: String,
+      required: [true, 'Please add your phone number'],
+    },
     mail: {
       type: String,
       required: [true, 'Please add your email'],
@@ -14,10 +18,6 @@ const memberSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Please add your password'],
-    },
-    phone: {
-      type: String,
-      required: [true, 'Please add your phone number'],
     },
   },
   {

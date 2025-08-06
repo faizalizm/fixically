@@ -11,7 +11,6 @@ import Footer from '../components/Footer';
 import { CardBox, SubmitButton, YellowDiv } from '../theme';
 import {
   Box,
-  CardContent,
   Container,
   TextField,
   Typography,
@@ -36,7 +35,7 @@ function About() {
       <Container>
         <Grid container my={16}>
           <Grid item xs={6} sx={gridStyle} alignItems="center">
-            <img src={addtocart} alt="" width="400px" />
+            <img src={addtocart} alt="Fixie Illustration" width="400px" />
           </Grid>
           <Grid item xs={6} sx={gridStyle} position="relative">
             <YellowDiv />
@@ -48,17 +47,15 @@ function About() {
               <br />
               all over Malaysia for you to choose from.
             </Typography>
-            <div style={{ overflow: 'hidden' }}>
-              <Box
-                position="absolute"
-                right="-840px"
-                top="100px"
-                maxWidth={`calc(100vw - ${840}px)`}
-                overflow="hidden"
-              >
-                <img src={lightwave} alt="Laptop Illustration" />
-              </Box>
-            </div>
+            <Box
+              position="absolute"
+              right="-840px"
+              top="100px"
+              maxWidth={`calc(100vw - ${840}px)`}
+              sx={{ overflow: 'hidden' }}
+            >
+              <img src={lightwave} alt="Laptop Illustration" />
+            </Box>
           </Grid>
         </Grid>
         <hr />
@@ -73,34 +70,21 @@ function About() {
             alignItems="center"
             position="relative"
           >
-            {/* <CardBox
-              width="400px"
-              height="620px"
-              left="70px"
-              bottom="30px"
-              position="absolute"
-            ></CardBox> */}
             <CardBox width="400px" sx={{ gap: '16px', padding: '32px 72px' }}>
               <Box display="flex" justifyContent="center" mb={2}>
                 <img src={laptop} alt="Laptop Illustration" width="120px" />
               </Box>
               <hr />
-              <Typography variant="h5" color={theme.palette.secondary.main}>
-                Laptop Brand
-              </Typography>
+              <Typography variant="h5">Laptop Brand</Typography>
               <TextField
                 type="email"
                 value="Asus Rog Strix Hero II"
                 size="small"
                 disabled
               />
-              <Typography variant="h5" color={theme.palette.secondary.main}>
-                Laptop Model
-              </Typography>
+              <Typography variant="h5">Laptop Model</Typography>
               <TextField type="email" value="GL-504GV" size="small" disabled />
-              <Typography variant="h5" color={theme.palette.secondary.main}>
-                Describe the problem
-              </Typography>
+              <Typography variant="h5">Describe the problem</Typography>
               <TextField
                 type="email"
                 value="My computer frequently goes bluescreen"
@@ -155,31 +139,14 @@ function About() {
             alignItems="center"
             position="relative"
           >
-            {/* <CardBox
-              width="400px"
-              height="620px"
-              left="70px"
-              bottom="30px"
-              position="absolute"
-            ></CardBox> */}
             <CardBox width="400px" sx={{ gap: '16px', padding: '32px 48px' }}>
               <Grid container>
                 <Grid item xs={8} spacing={32}>
-                  <Typography variant="h1" color={theme.palette.secondary.main}>
-                    32 GB RAM
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    color={theme.palette.secondary.main}
-                    mt={1}
-                  >
-                    Patriot Signature Line
-                  </Typography>
+                  <Typography variant="h2">32 GB RAM</Typography>
+                  <Typography variant="h6">Patriot Signature Line</Typography>
                 </Grid>
                 <Grid item xs={4} sx={gridStyle} alignItems="end">
-                  <Typography variant="h3" color={theme.palette.secondary.main}>
-                    Rm 420
-                  </Typography>
+                  <Typography variant="h3">RM 420</Typography>
                 </Grid>
               </Grid>
               <hr
@@ -191,21 +158,11 @@ function About() {
               />
               <Grid container>
                 <Grid item xs={8} spacing={32}>
-                  <Typography variant="h1" color={theme.palette.secondary.main}>
-                    512 GB SSD
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    color={theme.palette.secondary.main}
-                    mt={1}
-                  >
-                    Seagate One Touch
-                  </Typography>
+                  <Typography variant="h2">512 GB SSD</Typography>
+                  <Typography variant="h6">Seagate One Touch</Typography>
                 </Grid>
                 <Grid item xs={4} sx={gridStyle} alignItems="end">
-                  <Typography variant="h3" color={theme.palette.secondary.main}>
-                    Rm 360
-                  </Typography>
+                  <Typography variant="h3">RM 360</Typography>
                 </Grid>
               </Grid>
               <hr
@@ -215,25 +172,13 @@ function About() {
                   borderTop: `1px solid #E0E0E0`,
                 }}
               />
-              <Typography
-                variant="h1"
-                textAlign="center"
-                color={theme.palette.secondary.main}
-              >
+              <Typography variant="h1" textAlign="center">
                 Total
               </Typography>
-              <Typography
-                variant="h5"
-                textAlign="center"
-                color={theme.palette.secondary.main}
-              >
+              <Typography variant="h3" textAlign="center">
                 RM 780.00
               </Typography>
-              <SubmitButton
-                variant="contained"
-                type="submit"
-                endIcon={<RightIcon />}
-              >
+              <SubmitButton variant="contained" endIcon={<RightIcon />}>
                 Checkout
               </SubmitButton>
             </CardBox>
@@ -243,14 +188,14 @@ function About() {
         <Grid container my={16}>
           <Grid item xs={12} sx={gridStyle} alignItems="center">
             <CardBox sx={{ gap: '16px', padding: '32px 72px' }}>
-              <Typography textAlign="center" variant="h4">
-                Discover more features by
-                <br /> having your own Fixically
+              <Typography textAlign="center" variant="h2" mb={1}>
+                Discover more features by having
+                <br /> your own Fixically Membership
               </Typography>
               <SubmitButton
                 variant="contained"
                 type="submit"
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/register/member')}
                 endIcon={<RightIcon />}
               >
                 Register Now

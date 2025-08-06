@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+
+import { searchFixie, reset } from '../features/fixie/fixieSlice';
 
 import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
-import { CardBox, SubmitButton, YellowDiv } from '../theme';
 
+import { CardBox, SubmitButton, YellowDiv } from '../theme';
 import {
+  Autocomplete,
   Avatar,
   Box,
   Checkbox,
@@ -22,71 +20,103 @@ import {
   FormGroup,
   Rating,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { searchFixie, reset } from '../features/fixie/fixieSlice';
 
 function FixieSearch() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const { fixie, isLoading, isError, message } = useSelector(
     (state) => state.fixie
   );
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchData, setSearchData] = useState({
-    state: '',
-    city: '',
-    service: {},
-    os: {},
+    state: searchParams.get('state'),
+    category: searchParams.get('category')
+      ? [searchParams.get('category')]
+      : [],
+    os: searchParams.get('os') ? [searchParams.get('os')] : [],
   });
 
   useEffect(() => {
-    const osKeys = Object.keys(searchData.os).filter(
-      (key) => searchData.os[key]
-    );
-    const serviceKeys = Object.keys(searchData.service).filter(
-      (key) => searchData.service[key]
-    );
-
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (osKeys.length > 0) {
-      params.set('os', osKeys.join(','));
-    } else {
-      params.delete('os');
+    if (isError) {
+      console.log(message);
     }
 
-    if (serviceKeys.length > 0) {
-      params.set('service', serviceKeys.join(','));
-    } else {
-      params.delete('service');
-    }
+    setSearchParams({
+      state: searchData.state,
+      category: searchData.category,
+      os: searchData.os,
+    });
 
-    setSearchParams(params);
+    // const params = new URLSearchParams();
+    // if (searchData.state) params.set('state', searchData.state);
 
-    dispatch(searchFixie(location.search));
+    // if (Array.isArray(searchData.category)) {
+    //   if (searchData.category.length)
+    //     params.set('category', searchData.category.join(','));
+    // } else {
+    //   if (searchData.category) params.set('category', searchData.category);
+    // }
 
-    return () => {
-      dispatch(reset());
-    };
-  }, [searchData]);
+    // if (Array.isArray(searchData.os)) {
+    //   if (searchData.os.length) params.set('os', searchData.os.join(','));
+    // } else {
+    //   if (searchData.os) params.set('os', searchData.os);
+    // }
+    dispatch(searchFixie(searchData));
+    // return () => {
+    //   dispatch(reset());
+    // };
+  }, [searchData, isError, message, dispatch]);
 
-  console.log(fixie);
+  const malaysiaState = [
+    { label: 'Johor', stateNumber: 1 },
+    { label: 'Kedah', stateNumber: 2 },
+    { label: 'Kelantan', stateNumber: 3 },
+    { label: 'Melaka', stateNumber: 4 },
+    { label: 'Negeri Sembilan', stateNumber: 5 },
+    { label: 'Pahang', stateNumber: 6 },
+    { label: 'Pulau Pinang', stateNumber: 7 },
+    { label: 'Perak', stateNumber: 8 },
+    { label: 'Perlis', stateNumber: 9 },
+    { label: 'Selangor', stateNumber: 10 },
+    { label: 'Terengganu', stateNumber: 11 },
+    { label: 'Sabah', stateNumber: 12 },
+    { label: 'Sarawak', stateNumber: 13 },
+    { label: 'Kuala Lumpur', stateNumber: 14 },
+    { label: 'Labuan', stateNumber: 15 },
+    { label: 'Putrajaya', stateNumber: 16 },
+  ];
 
-  const onClick = (e) => {
-    const { name, checked, value } = e.target;
+  const onChangeState = (e, value) => {
     setSearchData((prevState) => ({
       ...prevState,
-      [name]: checked
-        ? { ...prevState[name], [value]: true }
-        : Object.fromEntries(
-            Object.entries(prevState[name]).filter(([k, v]) => k !== value)
-          ),
+      state: value?.label,
     }));
   };
+
+  const onChangeCategory = (e, value) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      category: e.target.checked
+        ? [...prevState.category, e.target.name]
+        : prevState.category.filter((category) => category !== e.target.name),
+    }));
+  };
+
+  const onChangeOs = (e, value) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      os: e.target.checked
+        ? [...prevState.os, e.target.name]
+        : prevState.os.filter((os) => os !== e.target.name),
+    }));
+  };
+
+  console.log(searchData);
 
   return (
     <>
@@ -97,107 +127,46 @@ function FixieSearch() {
             <form>
               <CardBox>
                 <FormGroup>
-                  <Typography variant="h5">Operating System</Typography>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        name="os"
-                        value="windows"
-                        onClick={onClick}
-                      />
-                    }
-                    label={<Typography variant="h6">Windows</Typography>}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        name="os"
-                        value="mac"
-                        onClick={onClick}
-                      />
-                    }
-                    label={<Typography variant="h6">Mac</Typography>}
+                  <Typography variant="h5" mb={2}>
+                    Location
+                  </Typography>
+                  <Autocomplete
+                    name="state"
+                    options={malaysiaState}
+                    onChange={onChangeState}
+                    defaultValue={searchData.state}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Choose state" />
+                    )}
+                    disablePortal
+                    freeSolo={false}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Typography variant="h5" mb={2}>
-                    Service
-                  </Typography>
-                  <Divider textAlign="left">
+                  <Typography variant="h5">Category</Typography>
+                  {/* <Divider textAlign="left">
                     <Chip label="Hardware" />
-                  </Divider>
-                  <Stack direction="row" spacing={1} mt={1}>
+                  </Divider> */}
+                  <Stack direction="row" spacing={1}>
                     <FormGroup>
                       <FormControlLabel
                         control={
                           <Checkbox
                             size="small"
-                            name="service"
-                            value="ram"
-                            onClick={onClick}
+                            name="Processor"
+                            checked={searchData.category.includes('Processor')}
+                            onChange={onChangeCategory}
                           />
                         }
-                        label={<Typography variant="h6">RAM</Typography>}
+                        label={<Typography variant="h6">Processor</Typography>}
                       />
                       <FormControlLabel
                         control={
                           <Checkbox
                             size="small"
-                            name="service"
-                            value="battery"
-                            onClick={onClick}
-                          />
-                        }
-                        label={<Typography variant="h6">Battery</Typography>}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="motherboard"
-                            onClick={onClick}
-                          />
-                        }
-                        label={
-                          <Typography variant="h6">Motherboard</Typography>
-                        }
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="graphic"
-                            onClick={onClick}
-                          />
-                        }
-                        label={
-                          <Typography variant="h6">Graphic Card</Typography>
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="wifi"
-                            onClick={onClick}
-                          />
-                        }
-                        label={<Typography variant="h6">Wifi</Typography>}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="storage"
-                            onClick={onClick}
+                            name="Storage"
+                            checked={searchData.category.includes('Storage')}
+                            onChange={onChangeCategory}
                           />
                         }
                         label={<Typography variant="h6">Storage</Typography>}
@@ -206,71 +175,127 @@ function FixieSearch() {
                         control={
                           <Checkbox
                             size="small"
-                            name="service"
-                            value="keyboard"
-                            onClick={onClick}
-                          />
-                        }
-                        label={<Typography variant="h6">Keyboard</Typography>}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="touchpad"
-                            onClick={onClick}
-                          />
-                        }
-                        label={<Typography variant="h6">Touchpad</Typography>}
-                      />
-                    </FormGroup>
-                  </Stack>
-                  <Divider textAlign="left">
-                    <Chip label="Software" />
-                  </Divider>
-                  <Stack direction="row" spacing={1} mt={1}>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="reformat"
-                            onClick={onClick}
-                          />
-                        }
-                        label={<Typography variant="h6">Reformat</Typography>}
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            name="service"
-                            value="installation"
-                            onClick={onClick}
+                            name="Peripherals"
+                            checked={searchData.category.includes(
+                              'Peripherals'
+                            )}
+                            onChange={onChangeCategory}
                           />
                         }
                         label={
-                          <Typography variant="h6">Installation</Typography>
+                          <Typography variant="h6">Peripherals</Typography>
                         }
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            name="Battery"
+                            checked={searchData.category.includes('Battery')}
+                            onChange={onChangeCategory}
+                          />
+                        }
+                        label={<Typography variant="h6">Battery</Typography>}
+                      />
+                    </FormGroup>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            name="Memory"
+                            checked={searchData.category.includes('Memory')}
+                            onChange={onChangeCategory}
+                          />
+                        }
+                        label={<Typography variant="h6">Memory</Typography>}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            name="Display"
+                            checked={searchData.category.includes('Display')}
+                            onChange={onChangeCategory}
+                          />
+                        }
+                        label={<Typography variant="h6">Display</Typography>}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            name="Connectivity"
+                            checked={searchData.category.includes(
+                              'Connectivity'
+                            )}
+                            onChange={onChangeCategory}
+                          />
+                        }
+                        label={
+                          <Typography variant="h6">Connectivity</Typography>
+                        }
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            name="Audio"
+                            checked={searchData.category.includes('Audio')}
+                            onChange={onChangeCategory}
+                          />
+                        }
+                        label={<Typography variant="h6">Audio</Typography>}
                       />
                     </FormGroup>
                   </Stack>
+                </FormGroup>
+                <FormGroup>
+                  <Typography variant="h5">Operating System</Typography>
                   <FormControlLabel
                     control={
                       <Checkbox
                         size="small"
-                        name="service"
-                        value="backup&restore"
-                        onClick={onClick}
+                        name="Windows"
+                        onChange={onChangeOs}
+                        defaultChecked={
+                          searchParams &&
+                          searchParams.get('os') &&
+                          searchParams.get('os').includes('Windows')
+                        }
                       />
                     }
-                    label={
-                      <Typography variant="h6">Backup & Restore</Typography>
+                    label={<Typography variant="h6">Windows</Typography>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        name="Mac"
+                        onChange={onChangeOs}
+                        defaultChecked={
+                          searchParams &&
+                          searchParams.get('os') &&
+                          searchParams.get('os').includes('Mac')
+                        }
+                      />
                     }
+                    label={<Typography variant="h6">Mac</Typography>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        name="Others"
+                        onChange={onChangeOs}
+                        defaultChecked={
+                          searchParams &&
+                          searchParams.get('os') &&
+                          searchParams.get('os').includes('Others')
+                        }
+                      />
+                    }
+                    label={<Typography variant="h6">Others</Typography>}
                   />
                 </FormGroup>
                 <FormGroup>
@@ -287,69 +312,66 @@ function FixieSearch() {
             </form>
           </Grid>
           <Grid item xs={9} padding={5}>
-            <Typography variant="h3">24 Fixie Found</Typography>
+            <Typography variant="h1">{fixie.length} Fixie Found</Typography>
             <YellowDiv />
-            {fixie.length > 0 ? (
-              <CardBox>
-                {fixie.map((fixie) => {
-                  <>
-                    <Grid container>
-                      <Grid
-                        item
-                        container
-                        xs={1}
-                        alignItems="center"
-                        key={fixie._id}
-                      >
-                        <Avatar
-                          alt="Remy Sharp"
-                          src={require('../assets/avatar/member-avatar.webp')}
-                        />
-                      </Grid>
-                      <Grid item container xs={8} direction="column">
-                        <Typography variant="h4">
-                          Rextech PC Sdn. Bhd
-                        </Typography>
-                        <Typography variant="p">
-                          Professional Gaming PC Builder
-                        </Typography>
-                      </Grid>
-                      <Grid item container xs={3} justifyContent="flex-end">
-                        4.9
-                        <Stack alignItems="center" ml={4}>
-                          <Rating name="read-only" value={5} readOnly />
-                          <Typography variant="p">(87 Reviews)</Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                    <Grid container alignItems="center">
-                      <Grid item container xs={4}>
-                        <Typography variant="p">Windows • MacOS</Typography>
-                      </Grid>
-                      <Grid item container xs={5} justifyContent="flex-end">
-                        <Typography variant="p" mr={4}>
-                          Kajang, Selangor
-                        </Typography>
-                      </Grid>
-                      <Grid item container xs={3}>
-                        <SubmitButton
-                          variant="contained"
-                          type="submit"
-                          button
-                          component={Link}
-                          to="/fixieProfile"
-                          fullWidth
-                        >
-                          View
-                        </SubmitButton>
-                      </Grid>
-                    </Grid>
-                  </>;
-                })}
-              </CardBox>
-            ) : (
-              'nogoal'
-            )}
+            {fixie.length > 0
+              ? fixie.map((fixie) => (
+                  <Box key={fixie._id}>
+                    <form onSubmit={() => navigate(`/fixie/${fixie._id}`)}>
+                      <CardBox my={4}>
+                        <Grid container>
+                          <Grid item container xs={1} alignItems="center">
+                            <Avatar
+                              alt="Remy Sharp"
+                              src={require('../assets/avatar/member-avatar.webp')}
+                            />
+                          </Grid>
+                          <Grid item container xs={8} direction="column">
+                            <Typography variant="h2">{fixie.name}</Typography>
+                            <Typography variant="p">
+                              {fixie.description}
+                            </Typography>
+                          </Grid>
+                          <Grid item container xs={3} justifyContent="flex-end">
+                            {fixie.average_rating?.toFixed(1) || 0}
+                            <Stack alignItems="center" ml={2}>
+                              <Rating
+                                name="read-only"
+                                value={fixie.average_rating || 0}
+                                readOnly
+                              />
+                              <Typography variant="p" mt={1}>
+                                ({fixie.review_count || 0} reviews)
+                              </Typography>
+                            </Stack>
+                          </Grid>
+                        </Grid>
+                        <Grid container alignItems="center">
+                          <Grid item container xs={4}>
+                            <Typography variant="p">
+                              {fixie.os_support?.join(' • ')}
+                            </Typography>
+                          </Grid>
+                          <Grid item container xs={5} justifyContent="flex-end">
+                            <Typography variant="p" mr={4}>
+                              {`${fixie.city}, ${fixie.state}`}
+                            </Typography>
+                          </Grid>
+                          <Grid item container xs={3}>
+                            <SubmitButton
+                              variant="contained"
+                              type="submit"
+                              fullWidth
+                            >
+                              View
+                            </SubmitButton>
+                          </Grid>
+                        </Grid>
+                      </CardBox>
+                    </form>
+                  </Box>
+                ))
+              : 'No fixie found'}
           </Grid>
         </Grid>
       </Container>

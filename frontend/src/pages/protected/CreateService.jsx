@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
-import { createService, reset } from '../../features/service/serviceSlice';
+import {
+  createService,
+  findService,
+  reset,
+  updateService,
+} from '../../features/service/serviceSlice';
 
 import { UserNavbar } from '../../components/UserNavbar';
 import { Sidebar } from '../../components/Sidebar';
 
+import { CardBox, StyledTextField, SubmitButton, YellowDiv } from '../../theme';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { CardBox, StyledTextField, SubmitButton, YellowDiv } from '../../theme';
 import { InputAdornment, Stack, Typography, useTheme } from '@mui/material';
 
 function CreateService() {
@@ -19,30 +25,50 @@ function CreateService() {
   const { service_id } = useParams();
 
   const { user } = useSelector((state) => state.auth);
+  const { service, isLoading, isError, message } = useSelector(
+    (state) => state.service
+  );
 
   const [formData, setFormData] = useState({
     category: '',
-    tag: '',
-    brand: '',
-    type: '',
-    capacity: '',
-    speed: '',
+    name: '',
+    desc_1: '',
+    desc_2: '',
+    desc_3: '',
     price: '',
-    labour: '',
+    stock: '',
   });
 
-  const { category, tag, brand, type, capacity, speed, price, labour } =
-    formData;
+  const { category, name, desc_1, desc_2, desc_3, stock, price } = formData;
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
+    } else {
+      if (service_id) {
+        dispatch(findService(service_id));
+      }
     }
 
     return () => {
       dispatch(reset());
     };
   }, [user, navigate, dispatch]);
+
+  useEffect(() => {
+    if (service_id && service) {
+      setFormData((prevState) => ({
+        ...prevState,
+        category: service.category,
+        name: service.name,
+        desc_1: service.desc_1,
+        desc_2: service.desc_2,
+        desc_3: service.desc_3,
+        price: service.price,
+        stock: service.stock,
+      }));
+    }
+  }, [service]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -51,23 +77,7 @@ function CreateService() {
     }));
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    let serviceData;
-
-    serviceData = {
-      category,
-      tag,
-      brand,
-      type,
-      capacity,
-      speed,
-      price,
-      labour,
-    };
-
-    dispatch(createService(serviceData));
-  };
+  // const onSubmit = ;
 
   return (
     <>
@@ -77,7 +87,7 @@ function CreateService() {
           <Sidebar />
         </Grid>
         <Grid item xs={7} px={4}>
-          <form onSubmit={onSubmit}>
+          <form>
             <Typography
               variant="h3"
               color={theme.palette.black.main}
@@ -111,58 +121,62 @@ function CreateService() {
                   <StyledTextField
                     type="text"
                     name="category"
+                    value={category}
                     onChange={onChange}
                     size="small"
                     fullWidth
                   />
                   <Typography variant="h5" mt={2} mb={1}>
-                    Tag
+                    Name
                   </Typography>
                   <StyledTextField
                     type="text"
-                    name="tag"
+                    name="name"
+                    value={name}
                     onChange={onChange}
                     size="small"
                     fullWidth
                   />
                   <Typography variant="h5" mt={2} mb={1}>
-                    Brand
+                    Description 1
                   </Typography>
                   <StyledTextField
                     type="text"
-                    name="brand"
-                    placeholder="test"
+                    name="desc_1"
+                    value={desc_1}
                     onChange={onChange}
                     size="small"
                     fullWidth
                   />
                   <Typography variant="h5" mt={2} mb={1}>
-                    Type
+                    Description 2
                   </Typography>
                   <StyledTextField
                     type="text"
-                    name="type"
-                    placeholder="test"
+                    name="desc_2"
+                    value={desc_2}
                     onChange={onChange}
                     size="small"
                     fullWidth
                   />
                   <Typography variant="h5" mt={2} mb={1}>
-                    Capacity
+                    Description 3
                   </Typography>
                   <StyledTextField
                     type="text"
-                    name="capacity"
+                    name="desc_3"
+                    value={desc_3}
                     onChange={onChange}
                     size="small"
                     fullWidth
                   />
                   <Typography variant="h5" mt={2} mb={1}>
-                    Speed
+                    Stock
                   </Typography>
                   <StyledTextField
                     type="text"
-                    name="speed"
+                    name="stock"
+                    value={stock}
                     onChange={onChange}
                     size="small"
                     fullWidth
@@ -198,21 +212,7 @@ function CreateService() {
                     <StyledTextField
                       type="number"
                       name="price"
-                      onChange={onChange}
-                      size="small"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">RM</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <Typography variant="h5" mt={2} mb={1}>
-                      Labour
-                    </Typography>
-                    <StyledTextField
-                      type="number"
-                      name="labour"
+                      value={price}
                       onChange={onChange}
                       size="small"
                       fullWidth
@@ -224,7 +224,34 @@ function CreateService() {
                     />
                   </Stack>
                   <Stack>
-                    <SubmitButton variant="contained" type="submit">
+                    <SubmitButton
+                      variant="contained"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        let serviceData;
+
+                        serviceData = {
+                          category,
+                          name,
+                          desc_1,
+                          desc_2,
+                          desc_3,
+                          stock,
+                          price,
+                        };
+
+                        if (service_id) {
+                          serviceData.id = service_id;
+                          dispatch(updateService(serviceData));
+                          toast.success('Service successfully updated');
+                          navigate('/services');
+                        } else {
+                          dispatch(createService(serviceData));
+                          toast.success('Service successfully created');
+                          navigate('/services');
+                        }
+                      }}
+                    >
                       Confirm Details
                     </SubmitButton>
                   </Stack>

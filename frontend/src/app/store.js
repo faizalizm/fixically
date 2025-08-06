@@ -5,6 +5,7 @@ import reviewReducer from '../features/review/reviewSlice';
 import quotationReducer from '../features/quotation/quotationSlice';
 import serviceReducer from '../features/service/serviceSlice';
 import fixieReducer from '../features/fixie/fixieSlice';
+import memberReducer from '../features/member/memberSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     quotation: quotationReducer,
     service: serviceReducer,
     fixie: fixieReducer,
+    member: memberReducer,
   },
 });

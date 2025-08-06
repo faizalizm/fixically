@@ -5,12 +5,14 @@ const {
   registerMember,
   loginMember,
   updateMember,
-  getMember,
+  profileMember,
+  allMember,
 } = require('../controllers/memberController');
 
+router.get('/profile', protect, profileMember);
+router.get('/all', protect, allMember);
 router.post('/register', registerMember);
 router.post('/login', loginMember);
 router.put('/update', protect, updateMember);
-router.get('/me', protect, getMember);
 
 module.exports = router;

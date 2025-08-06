@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import homepage from '../assets/illustration/homepage.png';
 import lightwave from '../assets/illustration/lightwave.png';
 
 import { Navbar } from '../components/Navbar';
 import Footer from '../components/Footer';
-import { CardBox, SubmitButton } from '../theme';
+import { CardBox, SubmitButton, YellowDiv } from '../theme';
 
 import {
   Autocomplete,
@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 
 const malaysiaState = [
   { label: 'Johor', stateNumber: 1 },
@@ -39,6 +40,52 @@ const malaysiaState = [
 ];
 
 function HomePage() {
+  const navigate = useNavigate();
+  const [searchData, setSearchData] = useState({
+    state: '',
+    category: [],
+    os: ['Windows'],
+  });
+
+  const onChangeState = (e, value) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      state: value?.label,
+    }));
+  };
+
+  const onChangeCategory = (e, value) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      category: e.target.checked
+        ? [...prevState.category, e.target.name]
+        : prevState.category.filter((category) => category !== e.target.name),
+    }));
+  };
+
+  const onChangeOs = (e, value) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      os: e.target.checked
+        ? [...prevState.os, e.target.name]
+        : prevState.os.filter((os) => os !== e.target.name),
+    }));
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const params = new URLSearchParams();
+    if (searchData.state) params.set('state', searchData.state);
+    if (searchData.category.length)
+      params.set('category', searchData.category.join(','));
+    if (searchData.os.length) params.set('os', searchData.os.join(','));
+
+    navigate(`/search?${params.toString()}`);
+  };
+
+  console.log(searchData);
+
   return (
     <>
       <Navbar />
@@ -49,6 +96,8 @@ function HomePage() {
           alignItems="center"
           rowSpacing={8}
           columnSpacing={4}
+          my={8}
+          mb={12}
         >
           <Grid
             item
@@ -60,102 +109,224 @@ function HomePage() {
           >
             <img src={homepage} alt="" />
             <Stack spacing={1}>
-              <Typography variant="h3" textAlign="center">
+              <Typography variant="h2" textAlign="center">
                 Search for a Fixie
               </Typography>
-              <Typography variant="h6">
+              <Typography variant="h4" textAlign="center">
                 Find a Fixie that suits your needs
               </Typography>
             </Stack>
           </Grid>
           <Grid item xs={8}>
             <CardBox>
-              <Grid container columnSpacing={4} rowSpacing={4}>
-                <Grid item xs={12}>
-                  <Typography variant="h4">Location</Typography>
-                  <Autocomplete
-                    disablePortal
-                    options={malaysiaState}
-                    renderInput={(params) => (
-                      <TextField {...params} label="State" />
-                    )}
-                  />
+              <form onSubmit={onSubmit}>
+                <Grid container columnSpacing={4} rowSpacing={4}>
+                  <Grid item xs={12}>
+                    <Typography variant="h3" mb={1}>
+                      Location
+                    </Typography>
+                    <Autocomplete
+                      name="state"
+                      options={malaysiaState}
+                      onChange={onChangeState}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Choose state" />
+                      )}
+                      disablePortal
+                      freeSolo={false}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="h3" mb={1}>
+                      Category
+                    </Typography>
+                    <Stack direction="row" spacing={4}>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Processor"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={
+                            <Typography variant="h6">Processor</Typography>
+                          }
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Storage"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={<Typography variant="h6">Storage</Typography>}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Peripherals"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={
+                            <Typography variant="h6">Peripherals</Typography>
+                          }
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Battery"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={<Typography variant="h6">Battery</Typography>}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Memory"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={<Typography variant="h6">Memory</Typography>}
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Display"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={<Typography variant="h6">Display</Typography>}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Connectivity"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={
+                            <Typography variant="h6">Connectivity</Typography>
+                          }
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size="small"
+                              name="Audio"
+                              onChange={onChangeCategory}
+                            />
+                          }
+                          label={<Typography variant="h6">Audio</Typography>}
+                        />
+                      </FormGroup>
+                    </Stack>
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="h4" sx={{ mb: 2 }}>
-                    Service
-                  </Typography>
-                  <Stack direction="row" spacing={4}>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">RAM</Typography>}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">Battery</Typography>}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={
-                          <Typography variant="h6">Motherboard</Typography>
-                        }
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={
-                          <Typography variant="h6">Graphic Card</Typography>
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">Wifi</Typography>}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">Storage</Typography>}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">Keyboard</Typography>}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        label={<Typography variant="h6">Touchpad</Typography>}
-                      />
-                    </FormGroup>
-                  </Stack>
-                </Grid>
-              </Grid>
-              <Stack>
-                <Typography variant="h4" sx={{ mb: 2 }}>
+                <Typography variant="h3" mt={4} mb={1}>
                   Operating System
                 </Typography>
-                <FormGroup>
+                <Stack direction="row" spacing={4}>
                   <FormControlLabel
-                    control={<Checkbox size="small" defaultChecked />}
-                    label="Windows"
+                    control={
+                      <Checkbox
+                        size="small"
+                        name="Windows"
+                        onChange={onChangeOs}
+                        defaultChecked
+                      />
+                    }
+                    label={<Typography variant="h6">Windows</Typography>}
                   />
                   <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    label="Mac"
+                    control={
+                      <Checkbox size="small" name="Mac" onChange={onChangeOs} />
+                    }
+                    label={<Typography variant="h6">Mac</Typography>}
                   />
-                </FormGroup>
-
-                <SubmitButton
-                  variant="contained"
-                  type="submit"
-                  component={Link}
-                  to="/search/fixie"
-                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        name="Others"
+                        onChange={onChangeOs}
+                      />
+                    }
+                    label={<Typography variant="h6">Others</Typography>}
+                  />
+                </Stack>
+                <SubmitButton variant="contained" type="submit" sx={{ mt: 2 }}>
                   Search
                 </SubmitButton>
-              </Stack>
+              </form>
             </CardBox>
           </Grid>
         </Grid>
+        {/* <Grid container>
+          <Grid item xs={12}>
+            <Typography variant="h1">Category</Typography>
+            <YellowDiv />
+            <Grid container columnSpacing={8} mt={4}>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Processor</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Memory</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Storage</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Display</Typography>
+                </CardBox>
+              </Grid>
+            </Grid>
+            <Grid container columnSpacing={8} mt={4}>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Peripherals</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Connectivity</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Battery</Typography>
+                </CardBox>
+              </Grid>
+              <Grid item xs={3}>
+                <CardBox>
+                  <Typography variant="h3">Audio</Typography>
+                </CardBox>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid> */}
       </Container>
       <Footer />
     </>

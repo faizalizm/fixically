@@ -1,67 +1,32 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const Fixie = require('../models/fixieModel');
-const { query } = require('express');
-
-// @desc    Search fixie
-// @route   GET /api/fixie/search
-// @access  Public
-const searchFixie = asyncHandler(async (req, res) => {
-  const osValues =
-    req.query.os && req.query.os.length > 1 ? req.query.os.split(',') : [];
-  const filter = {
-    $and: osValues.map((os) => ({ [`os_support.${os}`]: true })),
-  };
-
-  if (req.query.state) {
-    filter.state = {
-      $regex: req.query.state,
-      $options: 'i', // case-insensitive search
-    };
-  }
-
-  if (req.query.city) {
-    filter.city = {
-      $regex: req.query.city,
-      $options: 'i', // case-insensitive search
-    };
-  }
-
-  const fixie = await Fixie.find(filter, {
-    name: 1,
-    description: 1,
-    state: 1,
-    city: 1,
-    os_support: 1,
-  });
-  res.status(200).json(fixie);
-});
+const Order = require('../models/orderModel');
 
 // @desc    Register new fixie
 // @route   POST /api/fixie/register
 // @access  Public
 const registerFixie = asyncHandler(async (req, res) => {
   const {
-    owner_name,
-    name,
+    owner,
     mail,
     password,
+    name,
     phone,
     description,
     ssm,
     address,
     state,
     city,
-    windows,
-    mac,
   } = req.body;
 
   if (
-    !owner_name ||
-    !name ||
+    !owner ||
     !mail ||
     !password ||
+    !name ||
     !phone ||
     !description ||
     !ssm ||
@@ -69,7 +34,7 @@ const registerFixie = asyncHandler(async (req, res) => {
     !state ||
     !city
   ) {
-    res.status(400);
+    res.status(400); // BAD REQUEST
     throw new Error('Please add all fields');
   }
 
@@ -77,7 +42,7 @@ const registerFixie = asyncHandler(async (req, res) => {
   const fixieExist = await Fixie.findOne({ ssm });
 
   if (fixieExist) {
-    res.status(400);
+    res.status(409); // CONFLICT
     throw new Error('SSM Registration Number is already registered');
   }
 
@@ -87,30 +52,43 @@ const registerFixie = asyncHandler(async (req, res) => {
 
   // Create Fixie
   const fixie = await Fixie.create({
-    owner_name,
-    name,
+    owner,
     mail,
     password: hashedPassword,
+    name,
     phone,
     description,
     ssm,
     address,
     state,
     city,
+    os_support: ['Windows'],
     application: {
       status: 'CREATED',
-      date: Date.now(),
+      create_date: Date.now(),
     },
-    os_support: { windows, mac },
   });
 
   if (fixie) {
     res.status(201).json({
+      // CREATED
       _id: fixie._id,
+      owner: fixie.owner,
+      mail: fixie.mail,
+      name: fixie.name,
+      phone: fixie.phone,
+      description: fixie.description,
+      ssm: fixie.ssm,
+      address: fixie.address,
+      state: fixie.state,
+      city: fixie.city,
+      os_support: fixie.os_support,
+      application: fixie.application,
+      role: 'Fixie',
       token: generateToken(fixie._id),
     });
   } else {
-    res.status(400);
+    res.status(400); // BAD REQUEST
     throw new Error('Invalid fixie data');
   }
 });
@@ -121,46 +99,55 @@ const registerFixie = asyncHandler(async (req, res) => {
 const loginFixie = asyncHandler(async (req, res) => {
   const { mail, password } = req.body;
 
-  // Check user mmail
+  if (!mail || !password) {
+    res.status(400); // BAD REQUEST
+    throw new Error('Please add all fields');
+  }
+
   const fixie = await Fixie.findOne({ mail });
 
   if (fixie && (await bcrypt.compare(password, fixie.password))) {
     res.json({
       _id: fixie._id,
-      usertype: 'Fixie',
-      owner_name: fixie.owner_name,
-      name: fixie.name,
+      owner: fixie.owner,
       mail: fixie.mail,
+      name: fixie.name,
       phone: fixie.phone,
       description: fixie.description,
       ssm: fixie.ssm,
       address: fixie.address,
       state: fixie.state,
       city: fixie.city,
-      application: fixie.application,
       os_support: fixie.os_support,
+      application: fixie.application,
+      role: 'Fixie',
       token: generateToken(fixie._id),
     });
   } else {
-    res.status(400);
+    res.status(401); // UNAUTHORIZED
     throw new Error('Invalid credentials');
   }
 });
 
 // @desc    Update fixie data
-// @route   GET /api/fixie/update
+// @route   GET /api/fixie/update?id
 // @access  Private
 const updateFixie = asyncHandler(async (req, res) => {
-  const fixie = await Fixie.findById(req.fixie.id);
+  let fixie;
+  if (req.query.id) {
+    fixie = await Fixie.findById(req.query.id);
+  } else {
+    fixie = await Fixie.findById(req.user._id);
+  }
 
   if (!fixie) {
-    res.status(401);
+    res.status(404); // NOT FOUND
     throw new Error('Fixie not found');
   }
 
-  // Make sure only the fixie can update themselves
-  if (fixie._id.toString() !== req.fixie.id) {
-    res.status(401);
+  // Make sure only the fixie can update themselves and Admin
+  if (fixie._id.toString() != req.user._id && req.user.role !== 'Admin') {
+    res.status(401); // UNAUTHORIZED
     throw new Error('Unauthorized access to fixie data');
   }
 
@@ -171,18 +158,269 @@ const updateFixie = asyncHandler(async (req, res) => {
     req.body.password = hashedPassword;
   }
 
-  const updatedFixie = await Fixie.findByIdAndUpdate(fixie._id, req.body, {
-    new: true,
-  });
+  let updatedFixie;
+  if (req.body.application) {
+    let status =
+      req.body.application.status === 'approve'
+        ? 'APPROVED'
+        : req.body.application.status === 'reject'
+        ? 'REJECTED'
+        : '';
+    const updateData = {
+      $set: {
+        'application.status': status,
+        'application.result_date': req.body.application.result_date,
+      },
+    };
+    updatedFixie = await Fixie.findByIdAndUpdate(fixie._id, updateData, {
+      new: true,
+      select: '-password',
+    });
+
+    console.log(updateData);
+  } else {
+    updatedFixie = await Fixie.findByIdAndUpdate(fixie._id, req.body, {
+      new: true,
+      select: '-password',
+    });
+  }
+
+  updatedFixie = updatedFixie.toObject();
+  updatedFixie.role = req.user.role;
+  updatedFixie.token = req.user.token;
 
   res.status(200).json(updatedFixie);
 });
 
+// @desc    Search fixie
+// @route   GET /api/fixie/search?id
+// @access  Public
+const searchFixie = asyncHandler(async (req, res) => {
+  if (req.query.id) {
+    const selectFields =
+      'name mail phone description ssm address state city os_support';
+
+    const fixie = await Fixie.aggregate([
+      {
+        $match: { _id: mongoose.Types.ObjectId(req.query.id) },
+      },
+      {
+        $lookup: {
+          from: 'reviews',
+          localField: '_id',
+          foreignField: 'fixie_id',
+          as: 'reviews',
+        },
+      },
+      {
+        $addFields: {
+          average_rating: { $avg: '$reviews.star' },
+          review_count: { $size: '$reviews' },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          mail: 1,
+          phone: 1,
+          description: 1,
+          ssm: 1,
+          address: 1,
+          state: 1,
+          city: 1,
+          os_support: 1,
+          average_rating: 1,
+          review_count: 1,
+        },
+      },
+    ]);
+
+    if (!fixie) {
+      res.status(404);
+      throw new Error('Fixie not found');
+    }
+
+    res.status(200).json(fixie[0]);
+  }
+  const filter = {};
+
+  const osValues =
+    req.query.os && req.query.os.length > 1 ? req.query.os.split(',') : [];
+
+  if (osValues.length > 0) {
+    filter['os_support'] = { $in: osValues.map((os) => os) };
+  }
+
+  if (req.query.state) {
+    filter.state = {
+      $regex: new RegExp(req.query.state, 'i'),
+    };
+  }
+
+  const fixie = await Fixie.aggregate([
+    {
+      $match: filter,
+    },
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'fixie_id',
+        as: 'reviews',
+      },
+    },
+    {
+      $lookup: {
+        from: 'services',
+        localField: '_id',
+        foreignField: 'fixie_id',
+        as: 'services',
+      },
+    },
+    {
+      $addFields: {
+        average_rating: { $avg: '$reviews.star' },
+        review_count: { $size: '$reviews' },
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        description: 1,
+        city: 1,
+        state: 1,
+        os_support: 1,
+        average_rating: 1,
+        review_count: 1,
+        services: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json(fixie);
+});
+
+// @desc    Get fixie dashboard information
+// @route   GET /api/fixie/dashboard
+// @access  Public
+const dashboardFixie = asyncHandler(async (req, res) => {
+  const today = new Date();
+
+  // Weekly Orders
+  const startOfWeek = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() - today.getDay()
+  );
+  const endOfWeek = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + (6 - today.getDay())
+  );
+  const weeklyOrders = await Order.aggregate([
+    {
+      $match: {
+        fixie_id: req.user._id,
+        createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 },
+        grandTotal: { $sum: '$total' },
+      },
+    },
+  ]);
+
+  // Daily Orders
+  const startOfDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const endOfDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1
+  );
+  const dailyOrders = await Order.aggregate([
+    {
+      $match: {
+        fixie_id: req.user._id,
+        createdAt: { $gte: startOfDay, $lt: endOfDay },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 },
+        grandTotal: { $sum: '$total' },
+      },
+    },
+  ]);
+
+  // Monthly Orders
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const monthlyOrders = await Order.aggregate([
+    {
+      $match: {
+        fixie_id: req.user._id,
+        createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 },
+        grandTotal: { $sum: '$total' },
+      },
+    },
+  ]);
+
+  req.user.monthlyOrders =
+    monthlyOrders.length > 0 ? monthlyOrders[0].count : 0;
+  req.user.monthlyGrandTotal =
+    monthlyOrders.length > 0 ? monthlyOrders[0].grandTotal : 0;
+  req.user.weeklyOrders = weeklyOrders.length > 0 ? weeklyOrders[0].count : 0;
+  req.user.weeklyGrandTotal =
+    weeklyOrders.length > 0 ? weeklyOrders[0].grandTotal : 0;
+  req.user.dailyOrders = dailyOrders.length > 0 ? dailyOrders[0].count : 0;
+  req.user.dailyGrandTotal =
+    dailyOrders.length > 0 ? dailyOrders[0].grandTotal : 0;
+
+  res.status(200).json(req.user);
+});
+
 // @desc    Get fixie data
-// @route   GET /api/fixie/me
+// @route   GET /api/fixie/profile?id
 // @access  Private
-const getFixie = asyncHandler(async (req, res) => {
-  res.status(200).json(req.fixie);
+const profileFixie = asyncHandler(async (req, res) => {
+  if (req.user.role === 'Admin') {
+    const fixie = await Fixie.findById(req.query.id);
+    res.status(200).json(fixie);
+  }
+  res.status(200).json(req.user);
+});
+
+// @desc    Get all fixie
+// @route   GET /api/fixie/all?status
+// @access  Private
+const allFixie = asyncHandler(async (req, res) => {
+  if (req.user.role !== 'Admin') {
+    res.status(401); // UNAUTHORIZED
+    throw new Error('Unauthorized access to data');
+  }
+
+  let fixies;
+  if (req.query.status) {
+    fixies = await Fixie.find({ 'application.status': 'CREATED' });
+  } else {
+    fixies = await Fixie.find();
+  }
+
+  res.status(200).json(fixies);
 });
 
 // Generate JWT
@@ -193,9 +431,11 @@ const generateToken = (id) => {
 };
 
 module.exports = {
-  searchFixie,
   registerFixie,
   loginFixie,
   updateFixie,
-  getFixie,
+  searchFixie,
+  profileFixie,
+  dashboardFixie,
+  allFixie,
 };

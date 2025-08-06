@@ -4,12 +4,12 @@ const reviewSchema = mongoose.Schema(
   {
     fixie_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Please add fixie_id'],
+      required: true,
       ref: 'Fixie',
     },
     member_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Please add member_id'],
+      required: true,
       ref: 'Member',
     },
     star: {

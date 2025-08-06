@@ -1,14 +1,85 @@
+const mongoose = require('mongoose');
 const asyncHandler = require('express-async-handler');
 
 const Review = require('../models/reviewModel');
+const Member = require('../models/memberModel');
 
 // @desc    Get review
 // @route   GET /api/review
 // @access  Private
 const getReview = asyncHandler(async (req, res) => {
-  const review = req.fixie
-    ? await Review.find({ fixie_id: req.fixie.id })
-    : await Review.find({ member_id: req.member.id });
+  let review;
+
+  if (req.headers.role == 'Fixie') {
+    review = await Review.aggregate([
+      {
+        $match: { fixie_id: req.user._id },
+      },
+      {
+        $lookup: {
+          from: 'members', // Name of the Member collection
+          localField: 'member_id',
+          foreignField: '_id',
+          as: 'member',
+        },
+      },
+    ]);
+  } else if (req.headers.role == 'Member') {
+    review = await Review.aggregate([
+      {
+        $match: { member_id: req.user._id },
+      },
+      {
+        $lookup: {
+          from: 'members', // Name of the Member collection
+          localField: 'member_id',
+          foreignField: '_id',
+          as: 'member',
+        },
+      },
+    ]);
+  }
+
+  res.status(200).json(review);
+});
+
+// @desc    Get review
+// @route   GET /api/review/search?id
+// @access  Public
+const findReview = asyncHandler(async (req, res) => {
+  let review = await Review.aggregate([
+    {
+      $match: { fixie_id: mongoose.Types.ObjectId(req.query.id) },
+    },
+    {
+      $lookup: {
+        from: 'members',
+        localField: 'member_id',
+        foreignField: '_id',
+        as: 'member',
+      },
+    },
+    {
+      $addFields: {
+        member: { $arrayElemAt: ['$member', 0] },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        star: 1,
+        text: 1,
+        createdAt: 1,
+        member: {
+          name: '$member.name',
+          phone: '$member.phone',
+          mail: '$member.mail',
+        },
+        // createdAt: { $dateToParts: { date: '$createdAt' } },
+      },
+    },
+  ]);
+
   res.status(200).json(review);
 });
 
@@ -124,6 +195,7 @@ const deleteReview = asyncHandler(async (req, res) => {
 
 module.exports = {
   getReview,
+  findReview,
   setReview,
   updateReview,
   deleteReview,

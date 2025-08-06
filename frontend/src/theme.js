@@ -1,4 +1,4 @@
-import { Box, TextField, createTheme } from '@mui/material';
+import { Box, Stack, TextField, createTheme } from '@mui/material';
 import { Button, Chip, Divider, styled } from '@mui/material';
 
 export const theme = createTheme({
@@ -40,13 +40,27 @@ export const theme = createTheme({
 
   typography: {
     fontFamily: ['Mulish', 'sans-serif'].join(','),
-    h1: { fontSize: '1.50em', fontWeight: '800', color: '#1e1e1e' },
-    h2: { fontSize: '1.50em', fontWeight: '600', color: '#1e1e1e' },
+    h1: { fontSize: '2em', fontWeight: '700', color: '#1e1e1e' },
+    h2: {
+      fontSize: '1.50em',
+      fontWeight: '700',
+      color: '#1e1e1e',
+      lineHeight: '1.4',
+    },
     h3: { fontSize: '1.50em', fontWeight: '700', color: '#1e1e1e' },
-    h4: { fontSize: '1.25em', fontWeight: 'bold', color: '#1e1e1e' },
-    h5: { fontSize: '1.00em', fontWeight: '700', color: '#525252' },
-    h6: { fontSize: '0.87em', fontWeight: '600', color: '#525252' },
-    p: { fontFamily: ['Mulish', 'sans-serif'].join(','), fontSize: '0.9em' },
+    h4: {
+      fontSize: '1.00em',
+      fontWeight: '600',
+      color: '#525252',
+      lineHeight: '1.4',
+    },
+    h5: { fontSize: '0.87em', fontWeight: '700', color: '#525252' },
+    h6: { fontSize: '0.87em', fontWeight: '600', color: '#1e1e1e' },
+    p: {
+      fontFamily: ['Mulish', 'sans-serif'].join(','),
+      fontSize: '0.9em',
+      color: '#1e1e1e',
+    },
     button: {
       textTransform: 'none',
       fontWeight: '700',
@@ -70,6 +84,31 @@ export const CardBox = styled(Box)({
     '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
   borderRadius: '20px',
   gap: '32px',
+});
+
+export const ModalBox = styled(Box)({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  backgroundColor: '#FFFFFF',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '30px 40px',
+  boxShadow:
+    '-1.23856px -1.23856px 16.1013px #FAFBFF, 2.47712px 2.47712px 18.5784px rgba(166, 171, 189, 0.5)',
+  borderRadius: '20px',
+  gap: '16px',
+  pt: 2,
+  px: 4,
+  pb: 3,
+});
+
+export const IconStack = styled(Stack)({
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginTop: 4,
 });
 
 export const YellowDiv = styled(Divider)({

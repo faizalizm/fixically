@@ -1,12 +1,11 @@
 import axios from 'axios';
 
-const FIXIE_API = '/api/fixie/';
-const MEMBER_API = '/api/member/';
-
-// Register member
+// Register user
 const register = async (userData) => {
-  const API_URL = userData.userType === 'fixie' ? FIXIE_API : MEMBER_API;
-  const response = await axios.post(API_URL + 'register', userData);
+  const response = await axios.post(
+    '/api/' + userData.userType + '/register',
+    userData
+  );
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
@@ -15,14 +14,79 @@ const register = async (userData) => {
   return response.data;
 };
 
-// Login member
+// Login user
 const login = async (userData) => {
-  const API_URL = userData.userType === 'fixie' ? FIXIE_API : MEMBER_API;
-  const response = await axios.post(API_URL + 'login', userData);
+  const response = await axios.post(
+    '/api/' + userData.userType + '/login',
+    userData
+  );
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
   }
+
+  return response.data;
+};
+
+// Get user details
+const getProfile = async (token, role) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Role: role,
+    },
+  };
+
+  const response = await axios.get('/api/' + role + '/profile', config);
+
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
+
+  return response.data;
+};
+
+// Get user dashboard
+const getDashboard = async (token, role) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Role: role,
+    },
+  };
+
+  const response = await axios.get('/api/' + role + '/dashboard', config);
+
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
+
+  return response.data;
+};
+
+// Update user details
+const updateProfile = async (updateData, token, role) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Role: role,
+    },
+  };
+
+  let url = '';
+  if (updateData.role === 'Fixie') {
+    url = '/api/Fixie/update';
+  } else if (updateData.role === 'Member') {
+    url = '/api/Member/update';
+  } else {
+    url = '/api/Admin/update';
+  }
+
+  if (updateData.id) {
+    url += `?id=${updateData.id}`;
+  }
+
+  const response = await axios.put(url, updateData, config);
 
   return response.data;
 };
@@ -36,6 +100,9 @@ const logout = () => {
 const authService = {
   register,
   login,
+  getProfile,
+  getDashboard,
+  updateProfile,
   logout,
 };
 

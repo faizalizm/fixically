@@ -32,7 +32,7 @@ function Register() {
     mail: '',
     password: '',
     password2: '',
-    owner_name: '',
+    owner: '',
     description: '',
     ssm: '',
     address: '',
@@ -46,7 +46,7 @@ function Register() {
     mail,
     password,
     password2,
-    owner_name,
+    owner,
     description,
     ssm,
     address,
@@ -92,12 +92,13 @@ function Register() {
             mail,
             password,
             password2,
-            owner_name,
+            owner,
             description,
             ssm,
             address,
             state,
             city,
+            application: { submit_date: Date.now() },
             userType: 'fixie',
           })
         : (registerData = {
@@ -125,7 +126,7 @@ function Register() {
       <Container>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant="h3">
+            <Typography variant="h1">
               {registerType == 'fixie'
                 ? 'Fixie Registration'
                 : 'Member Registration'}
@@ -138,7 +139,7 @@ function Register() {
                 <CardBox sx={{ padding: '40px 50px' }}>
                   <Grid container spacing={4} columns={13}>
                     <Grid item xs={4}>
-                      <Typography variant="h4" sx={{ mb: 4 }}>
+                      <Typography variant="h2" sx={{ mb: 4 }}>
                         Owner's Detail
                       </Typography>
                       <Typography
@@ -150,9 +151,9 @@ function Register() {
                       </Typography>
                       <TextField
                         type="text"
-                        id="owner_name"
-                        name="owner_name"
-                        value={owner_name}
+                        id="owner"
+                        name="owner"
+                        value={owner}
                         placeholder="Ali Bin Abu"
                         onChange={onChange}
                         size="small"
@@ -214,7 +215,7 @@ function Register() {
                       <StyledDivider orientation="vertical" variant="middle" />
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="h4" sx={{ mb: 4 }}>
+                      <Typography variant="h2" sx={{ mb: 4 }}>
                         Shop Detail
                       </Typography>
                       <Typography
@@ -297,7 +298,7 @@ function Register() {
                     >
                       <Box>
                         <Typography
-                          variant="h4"
+                          variant="h2"
                           sx={{ mb: 4 }}
                           color={theme.palette.white.background}
                         >
@@ -365,7 +366,7 @@ function Register() {
                 <CardBox sx={{ width: '80%', padding: '40px 50px' }}>
                   <Grid container spacing={4} columns={9}>
                     <Grid item xs={4}>
-                      <Typography variant="h4">Personal Detail</Typography>
+                      <Typography variant="h2">Personal Detail</Typography>
                       <Typography variant="p" mb={2}>
                         This detail will be used for Fixie to identify you
                       </Typography>
@@ -408,7 +409,7 @@ function Register() {
                       <StyledDivider orientation="vertical" variant="middle" />
                     </Grid>
                     <Grid item xs={4} display="flex" flexDirection="column">
-                      <Typography variant="h4">Credentials</Typography>
+                      <Typography variant="h2">Credentials</Typography>
                       <Typography variant="p" mb={2}>
                         This will be used as your login information
                       </Typography>
@@ -463,7 +464,11 @@ function Register() {
                         size="small"
                         fullWidth
                       />
-                      <SubmitButton variant="contained" type="submit">
+                      <SubmitButton
+                        variant="contained"
+                        type="submit"
+                        sx={{ mt: 4 }}
+                      >
                         Register
                       </SubmitButton>
                     </Grid>

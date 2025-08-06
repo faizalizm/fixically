@@ -7,37 +7,33 @@ const serviceSchema = mongoose.Schema(
       required: true,
       ref: 'Fixie',
     },
-    category: {
-      type: String,
-      required: [true, 'Please add category'],
-    },
-    tag: {
-      type: String,
-      required: [true, 'Please add tag'],
-    },
-    brand: {
-      type: String,
-      required: [true, 'Please add brand'],
-    },
-    type: {
-      type: String,
-      required: [true, 'Please add type'],
-    },
-    capacity: {
-      type: String,
-      required: [true, 'Please add capacity'],
-    },
-    speed: {
-      type: String,
-      required: [true, 'Please add speed'],
-    },
     price: {
       type: Number,
       required: [true, 'Please add price'],
     },
-    labour: {
+    stock: {
       type: Number,
-      required: [true, 'Please add labour'],
+      required: [true, 'Please add stock'],
+    },
+    name: {
+      type: String,
+      required: [true, 'Please add name'],
+    },
+    category: {
+      type: String,
+      required: [true, 'Please add category'],
+    },
+    desc_1: {
+      type: String,
+      required: [true, 'Please add desc_1'],
+    },
+    desc_2: {
+      type: String,
+      required: [true, 'Please add desc_2'],
+    },
+    desc_3: {
+      type: String,
+      required: [true, 'Please add desc_3'],
     },
   },
   {

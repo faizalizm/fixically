@@ -14,8 +14,10 @@ export const createService = createAsyncThunk(
   'service/create',
   async (serviceData, thunkAPI) => {
     try {
+      console.log('test');
       const token = thunkAPI.getState().auth.user.token;
-      return await serviceService.createService(serviceData, token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await serviceService.createService(serviceData, token, role);
     } catch (error) {
       const message =
         (error.response &&
@@ -34,7 +36,26 @@ export const getService = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await serviceService.getService(token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await serviceService.getService(token, role);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Search service
+export const searchService = createAsyncThunk(
+  'service/search',
+  async (id, thunkAPI) => {
+    try {
+      return await serviceService.searchService(id);
     } catch (error) {
       const message =
         (error.response &&
@@ -49,11 +70,32 @@ export const getService = createAsyncThunk(
 
 // Find service
 export const findService = createAsyncThunk(
-  'service/getOne',
-  async (_, thunkAPI) => {
+  'service/find',
+  async (id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await serviceService.findService(token);
+      const role = thunkAPI.getState().auth.user.role;
+      return await serviceService.findService(id, token, role);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Find service
+export const updateService = createAsyncThunk(
+  'service/update',
+  async (serviceData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const role = thunkAPI.getState().auth.user.role;
+      return await serviceService.updateService(serviceData, token, role);
     } catch (error) {
       const message =
         (error.response &&
@@ -115,6 +157,45 @@ export const serviceSlice = createSlice({
         state.service = action.payload;
       })
       .addCase(getService.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(searchService.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(searchService.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.service = action.payload;
+      })
+      .addCase(searchService.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(findService.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(findService.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.service = action.payload;
+      })
+      .addCase(findService.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(updateService.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateService.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // state.service = action.payload;
+      })
+      .addCase(updateService.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

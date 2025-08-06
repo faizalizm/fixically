@@ -1,29 +1,29 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getService, reset } from '../../features/service/serviceSlice';
+import { allFixie, reset } from '../../features/fixie/fixieSlice';
 
 import { UserNavbar } from '../../components/UserNavbar';
 import { Sidebar } from '../../components/Sidebar';
 
-import { YellowDiv, CardBox, SubmitButton } from '../../theme';
-
-import NavigateNextOutlined from '@mui/icons-material/NavigateNextOutlined';
-import AddIcon from '@mui/icons-material/AddOutlined';
 import { useTheme } from '@mui/system';
 import { Box, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { DataGrid } from '@mui/x-data-grid';
 
-function Services() {
+import NavigateNextOutlined from '@mui/icons-material/NavigateNextOutlined';
+
+import { YellowDiv, StatusChip, CardBox, SubmitButton } from '../../theme';
+
+function ListFixies() {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { service, isLoading, isError, message } = useSelector(
-    (state) => state.service
+  const { fixie, isLoading, isError, message } = useSelector(
+    (state) => state.fixie
   );
 
   useEffect(() => {
@@ -31,11 +31,10 @@ function Services() {
       console.log(message);
     }
 
-    if (!user) {
-      navigate('/login');
-    }
+    if (!user) navigate('/login');
+    else if (user.role === 'Fixie') navigate('/dashboard');
 
-    dispatch(getService());
+    dispatch(allFixie());
 
     return () => {
       dispatch(reset());
@@ -45,51 +44,33 @@ function Services() {
   const columns = [
     {
       field: '_id',
-      headerName: 'Service',
+      headerName: 'Fixie ID',
       headerClassName: 'firstCol',
       flex: 1,
     },
     {
-      field: 'brand',
-      headerName: 'Brand',
+      field: 'phone',
+      headerName: 'Phone',
+      flex: 1,
+    },
+    {
+      field: 'ssm',
+      headerName: 'SSM Number',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
     },
     {
-      field: 'type',
-      headerName: 'Type',
-      align: 'center',
-      headerAlign: 'center',
+      headerName: 'Address',
+      renderCell: (params) => {
+        return (
+          <>
+            {params.row.city}, {params.row.state}
+          </>
+        );
+      },
       flex: 1,
-    },
-    {
-      field: 'capacity',
-      headerName: 'Capacity',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-    },
-    {
-      field: 'speed',
-      headerName: 'Speed',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-    },
-    {
-      field: 'price',
-      headerName: 'Price',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Date',
-      type: 'dateTime',
-      valueGetter: ({ value }) => value && new Date(value),
-      flex: 1,
+      sortable: false,
     },
     {
       field: 'View',
@@ -98,7 +79,9 @@ function Services() {
         return (
           <SubmitButton
             variant="contained"
-            onClick={() => navigate('/services/' + params.row._id)}
+            sx={{ width: '100%' }}
+            component={Link}
+            to={'/fixies/' + params.row._id}
             endIcon={<NavigateNextOutlined />}
           >
             View
@@ -114,42 +97,27 @@ function Services() {
   return (
     <>
       <UserNavbar />
-      <Grid container spacing={4}>
-        <Grid item xs={2} height="100%">
+      <Grid container>
+        <Grid item xs={2}>
           <Sidebar />
         </Grid>
-        <Grid item xs={10}>
-          <Typography
-            variant="h3"
-            color={theme.palette.black.main}
-            sx={{ mt: 6 }}
-          >
-            Service
+        <Grid item xs={10} px={4}>
+          <Typography variant="h1" sx={{ mt: 4 }}>
+            Fixies
           </Typography>
           <YellowDiv />
 
           <Grid container spacing={2}>
             <Grid xs={10}>
               <CardBox sx={{ gap: '8px' }}>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="h3">
-                    {service.length} Services
-                  </Typography>
-                  <Stack>
-                    <SubmitButton
-                      variant="contained"
-                      onClick={() => navigate('/services/create')}
-                      endIcon={<AddIcon />}
-                    >
-                      Create New Service
-                    </SubmitButton>
-                  </Stack>
+                <Stack direction="row" justifyContent="space-between" mb={2}>
+                  <Typography variant="h3">{fixie.length} Fixie</Typography>
                 </Stack>
                 <Box
                   sx={{
-                    height: 700,
+                    height: '65vh',
                     '& .firstCol': {
-                      borderRadius: '20px 0 20px 0',
+                      borderRadius: '20px 0 0 20px',
                     },
                     '& .lastCol': {
                       borderRadius: '0 20px 20px 0',
@@ -160,10 +128,11 @@ function Services() {
                   }}
                 >
                   <DataGrid
-                    getRowId={(service) => service._id}
+                    getRowId={(fixie) => fixie._id}
                     getRowHeight={() => 'auto'}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    rows={service}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    rows={fixie}
                     columns={columns}
                     sx={{
                       '&.MuiDataGrid-root': {
@@ -196,4 +165,4 @@ function Services() {
   );
 }
 
-export default Services;
+export default ListFixies;

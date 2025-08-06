@@ -14,6 +14,7 @@ const quotationSchema = mongoose.Schema(
     },
     status: {
       type: String,
+      // CREATED REPLIED ACCEPTED REJECTED
       required: [true, 'Please add status'],
     },
     brand: {

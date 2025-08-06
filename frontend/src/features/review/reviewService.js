@@ -16,14 +16,22 @@ const createReview = async (reviewData, token) => {
 };
 
 // Get review
-const getReview = async (token) => {
+const getReview = async (requestParam, token, role) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      Role: role,
     },
   };
 
   const response = await axios.get(API_URL, config);
+
+  return response.data;
+};
+
+// Find review
+const findReview = async (id) => {
+  const response = await axios.get(API_URL + 'search?id=' + id);
 
   return response.data;
 };
@@ -44,6 +52,7 @@ const deleteReview = async (id, token) => {
 const reviewService = {
   createReview,
   getReview,
+  findReview,
   deleteReview,
 };
 

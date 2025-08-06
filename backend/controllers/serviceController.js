@@ -2,19 +2,34 @@ const asyncHandler = require('express-async-handler');
 
 const Service = require('../models/serviceModel');
 
-// @desc    Get service
+// @desc    Get all service
 // @route   GET /api/service
 // @access  Private
 const getService = asyncHandler(async (req, res) => {
-  const service = await Service.find({ fixie_id: req.fixie.id });
+  const service = await Service.find({ fixie_id: req.user._id });
   res.status(200).json(service);
 });
 
-// @desc    Find service
+// @desc    Search for a Fixie service
+// @route   GET /api/service/search?id
+// @access  Public
+const searchService = asyncHandler(async (req, res) => {
+  const service = await Service.find({ fixie_id: req.query.id });
+  const categories = await Service.distinct('category', {
+    fixie_id: req.query.id,
+  });
+
+  res.status(200).json([service, categories]);
+});
+
+// @desc    Find specific service
 // @route   GET /api/service/:id
 // @access  Private
 const findService = asyncHandler(async (req, res) => {
-  const service = await Service.find({ fixie_id: req.fixie.id });
+  const service = await Service.findOne({
+    fixie_id: req.user._id,
+    _id: req.params.id,
+  });
   res.status(200).json(service);
 });
 
@@ -22,56 +37,16 @@ const findService = asyncHandler(async (req, res) => {
 // @route   POST /api/service/
 // @access  Private
 const setService = asyncHandler(async (req, res) => {
-  if (!req.body.category) {
-    res.status(400);
-    throw new Error('Please indicate category');
-  }
-
-  if (!req.body.tag) {
-    res.status(400);
-    throw new Error('Please indicate tag');
-  }
-
-  if (!req.body.brand) {
-    res.status(400);
-    throw new Error('Please indicate brand');
-  }
-
-  if (!req.body.type) {
-    res.status(400);
-    throw new Error('Please indicate type');
-  }
-
-  if (!req.body.capacity) {
-    res.status(400);
-    throw new Error('Please indicate capacity');
-  }
-
-  if (!req.body.speed) {
-    res.status(400);
-    throw new Error('Please indicate speed');
-  }
-
-  if (!req.body.price) {
-    res.status(400);
-    throw new Error('Please indicate price');
-  }
-
-  if (!req.body.labour) {
-    res.status(400);
-    throw new Error('Please indicate labour');
-  }
-
   const service = await Service.create({
-    fixie_id: req.fixie.id,
+    fixie_id: req.user._id,
     category: req.body.category,
-    tag: req.body.tag,
-    brand: req.body.brand,
+    name: req.body.name,
+    desc_1: req.body.desc_1,
+    desc_2: req.body.desc_2,
+    desc_3: req.body.desc_3,
     type: req.body.type,
-    capacity: req.body.capacity,
-    speed: req.body.speed,
     price: req.body.price,
-    labour: req.body.labour,
+    stock: req.body.stock,
   });
 
   res.status(200).json(service);
@@ -88,14 +63,8 @@ const updateService = asyncHandler(async (req, res) => {
     throw new Error('Service not found');
   }
 
-  // Check for fixie
-  if (!req.fixie) {
-    res.status(401);
-    throw new Error('Fixie not found');
-  }
-
   // Make sure service belongs to fixie
-  if (service.fixie_id.toString() !== req.fixie.id) {
+  if (service.fixie_id.toString() != req.user._id) {
     res.status(401);
     throw new Error('Unauthorized access to service');
   }
@@ -121,14 +90,8 @@ const deleteService = asyncHandler(async (req, res) => {
     throw new Error('Service not found');
   }
 
-  // Check for fixie
-  if (!req.fixie) {
-    res.status(401);
-    throw new Error('Fixie not found');
-  }
-
   // Make sure service belongs to fixie
-  if (service.fixie_id.toString() !== req.fixie.id) {
+  if (service.fixie_id.toString() != req.user._id) {
     res.status(401);
     throw new Error('Unauthorized access to service');
   }
@@ -140,6 +103,8 @@ const deleteService = asyncHandler(async (req, res) => {
 
 module.exports = {
   getService,
+  searchService,
+  findService,
   setService,
   updateService,
   deleteService,

@@ -23,9 +23,13 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 function Login() {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [userType, setUserType] = useState('member');
-
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+  const [userType, setUserType] = useState('Member');
   const [formData, setFormData] = useState({
     mail: '',
     password: '',
@@ -33,20 +37,15 @@ function Login() {
 
   const { mail, password } = formData;
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
-
   useEffect(() => {
     if (isError) {
       toast.error(message);
     }
 
     if (isSuccess || user) {
-      navigate('/dashboard');
+      if (userType === 'Member') {
+        navigate('/orders');
+      } else navigate('/dashboard');
     }
 
     dispatch(reset());
@@ -105,8 +104,8 @@ function Login() {
                   centered
                   sx={{ mb: 2 }}
                 >
-                  <Tab value="member" label="Member Login" />
-                  <Tab value="fixie" label="Fixie Login" />
+                  <Tab value="Member" label="Member Login" />
+                  <Tab value="Fixie" label="Fixie Login" />
                 </Tabs>
                 <CardBox>
                   <CardContent

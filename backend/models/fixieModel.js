@@ -2,13 +2,9 @@ const mongoose = require('mongoose');
 
 const fixieSchema = mongoose.Schema(
   {
-    owner_name: {
+    owner: {
       type: String,
-      required: [true, 'Please add owner name'],
-    },
-    name: {
-      type: String,
-      required: [true, 'Please add company name'],
+      required: [true, 'Please add owner'],
     },
     mail: {
       type: String,
@@ -18,17 +14,21 @@ const fixieSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add your password'],
     },
+    name: {
+      type: String,
+      required: [true, 'Please add company name'],
+    },
     phone: {
-      type: Number,
-      required: [true, 'Please add your phone number'],
+      type: String,
+      required: [true, 'Please add company phone number'],
     },
     description: {
       type: String,
-      required: [true, 'Please add your company description'],
+      required: [true, 'Please add company description'],
     },
     ssm: {
       type: String,
-      required: [true, 'Please add your company ssm registration number'],
+      required: [true, 'Please add company ssm registration number'],
       unique: true,
     },
     address: {
@@ -43,20 +43,19 @@ const fixieSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add company city'],
     },
+    os_support: {
+      type: Array,
+    },
     application: {
-      submit_date: {
+      status: {
+        type: String,
+        // CREATED APPROVED REJECTED
+      },
+      create_date: {
         type: Date,
       },
       result_date: {
         type: Date,
-      },
-    },
-    os_support: {
-      windows: {
-        type: String,
-      },
-      mac: {
-        type: String,
       },
     },
   },

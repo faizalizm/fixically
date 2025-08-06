@@ -12,9 +12,13 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'Member',
     },
-    quote_id: {
+    quotation_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Quotation',
+    },
+    status: {
+      type: String,
+      required: [true, 'Please add order status'],
     },
     item: [
       {
@@ -23,39 +27,19 @@ const orderSchema = mongoose.Schema(
           required: true,
           ref: 'Service',
         },
-        tag: {
-          type: String,
-          required: [true, 'Please add tag'],
-        },
-        brand: {
-          type: String,
-          required: [true, 'Please add brand'],
-        },
-        type: {
-          type: String,
-          required: [true, 'Please add type'],
-        },
-        capacity: {
-          type: String,
-          required: [true, 'Please add capacity'],
-        },
-        speed: {
-          type: String,
-          required: [true, 'Please add speed'],
-        },
         price: {
           type: Number,
           required: [true, 'Please add price'],
         },
+        quantity: {
+          type: Number,
+          required: [true, 'Please add quantity'],
+        },
       },
     ],
-    status: {
-      type: String,
-      required: [true, 'Please add an order status'],
-    },
     total: {
       type: Number,
-      required: [true, 'Please add tag'],
+      required: [true, 'Please add total'],
     },
   },
   {
